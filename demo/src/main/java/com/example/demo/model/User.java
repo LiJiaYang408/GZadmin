@@ -1,22 +1,21 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "users")
+
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer userId;
 
-    @Column(nullable = false, unique = true)
     private String userName;
 
-    @Column(nullable = false)
     private String userPassword;
 
-    @Column(nullable = false)
     private String userRole;
+
+    public User(String userName, String userPassword) {
+        this.userName = userName;
+        this.userPassword = userPassword;
+    }
 
     // Getters and Setters
     public Integer getUserId() {
