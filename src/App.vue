@@ -1,14 +1,7 @@
 <template>
   <div id="app">
-    <!-- 导航栏 -->
-    <nav v-if="isAuthenticated">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <button @click="logout">Logout</button>
-    </nav>
-
     <!-- 路由视图 -->
-    <router-view @login-success="checkAuth" />
+    <router-view/>
   </div>
 </template>
 
@@ -21,26 +14,9 @@ export default {
     };
   },
   created() {
-    this.checkAuth(); // 检查用户是否已登录
-  },
-  methods: {
-    // 检查用户是否已登录
-    checkAuth() {
-      const token = localStorage.getItem('token');
-      if (token) {
-        this.isAuthenticated = true;
-      } else {
-        this.isAuthenticated = false;
-      }
-    },
 
-    // 用户注销
-    logout() {
-      localStorage.removeItem('token'); // 移除 token
-      this.isAuthenticated = false; // 更新登录状态
-      this.$router.push('/login'); // 跳转到登录页面
-    },
   },
+  methods: {},
 };
 </script>
 

@@ -5,12 +5,12 @@ import About from '../views/AboutView.vue';
 
 const routes = [
     {
-        path: '/login',
+        path: '/',
         name: 'Login',
         component: Login,
     },
     {
-        path: '/',
+        path: '/home',
         name: 'Home',
         component: Home,
         meta: { requiresAuth: true }, // 需要登录
@@ -26,16 +26,6 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
-});
-
-// 路由守卫
-router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('token');
-    if (to.meta.requiresAuth && !token) {
-        next({ name: 'Login' }); // 未登录则跳转到登录页面
-    } else {
-        next();
-    }
 });
 
 export default router;
