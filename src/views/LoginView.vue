@@ -1,15 +1,13 @@
 <template>
-
   <div className="login-container">
     <!-- 左侧表单区域 -->
     <div className="login-form">
       <div className="logo-container">
-        <!--        <img src="@/assets/logo.png" alt="Deep Reads Biotech Logo" className="logo">-->
-        <h1 className="company-name">DEEP READS BIOTECH</h1>
+        <img src="@/assets/logo.png" alt="Deep Reads Biotech Logo" className="logo" style="margin: 0 auto;">
       </div>
 
       <div className="login-content">
-        <h2 className="title">FIMTA法庭科学二代测序线粒体分析比对软件</h2>
+        <h1 className="title">FIMTA法庭科学二代测序线粒体分析比对软件</h1>
         <p className="subtitle">"十四五"拐卖人口犯罪精准识别及预警技术研究</p>
 
         <form class="form" @submit.prevent="handleLogin">
@@ -113,7 +111,8 @@ export default {
         });
         if (response.data.code===200){
           console.log("登录成功");
-          await router.push("/home")
+          localStorage.setItem('token', response.data.data)
+          await router.push("/index")
         }
       } catch (error) {
         console.error('登录失败:', error);
@@ -132,6 +131,7 @@ export default {
   display: flex;
   height: 100vh;
   width: 1885px;
+  margin-top: -60px;
 }
 
 .login-form {
@@ -145,7 +145,13 @@ export default {
 .logo-container {
   display: flex;
   align-items: center;
-  margin-bottom: 30px;
+  margin-top: 170px;
+  margin-bottom: 20px;
+}
+
+.logo-container img{
+  width: 270px;
+  height: 100px;
 }
 
 .logo {
