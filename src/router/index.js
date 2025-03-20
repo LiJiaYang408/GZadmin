@@ -1,8 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/LoginView.vue';
-import Home from '../components/HomeComponent';
-import About from '../components/AboutView.vue';
+import Chart from '../components/ChartComponent';
+import MitochondrialDetail from '../components/MitochondrialDetail';
+import SiteInfo from '../components/SiteInfo';
 import IndexView from "@/views/IndexView";
+import FileUpload from "@/components/FileUploadComponent"
+import Comparison from "@/components/ComparisonComponent"
 
 const routes = [
     {
@@ -17,16 +20,29 @@ const routes = [
         component: IndexView,
         children:[
             {
-                path: '/home',
-                name: 'Home',
-                component: Home,
-                meta: { requiresAuth: true }, // 需要登录
+                path: '/chart',
+                name: 'Chart',
+                component: Chart,
             },
             {
-                path: '/about',
-                name: 'About',
-                component: About,
-                meta: { requiresAuth: true }, // 需要登录
+                path: '/mitochondrialDetail',
+                name: 'MitochondrialDetail',
+                component: MitochondrialDetail,
+            },
+            {
+                path: '/siteInfo',
+                name: 'SiteInfo',
+                component: SiteInfo,
+            },
+            {
+                path: '/fileUpload',
+                name: 'FileUpload',
+                component: FileUpload,
+            },
+            {
+                path: '/comparison',
+                name: 'Comparison',
+                component: Comparison,
             },
         ]
     }

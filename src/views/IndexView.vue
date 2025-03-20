@@ -12,25 +12,25 @@
       <!-- 侧边栏 -->
       <aside className="sidebar">
         <ul className="nav-menu">
-          <router-link to="/home">
+          <router-link to="/chart">
           <li>
               <img src="@/assets/chart.png" class="el-aside-img">
               <span>图表数据</span>
           </li>
           </router-link>
-          <router-link to="/about">
+          <router-link to="/mitochondrialDetail">
           <li>
             <img src="@/assets/tabulation.png" class="el-aside-img">
               <span>表格数据</span>
           </li>
           </router-link>
-          <router-link to="/file-upload">
+          <router-link to="/fileUpload">
           <li>
             <img src="@/assets/FileUpload.png" class="el-aside-img">
             <span>文件上传</span>
           </li>
           </router-link>
-          <router-link to="/data-comparison">
+          <router-link to="/comparison">
           <li>
               <img src="@/assets/comparison.png" class="el-aside-img">
               <span>数据比对</span>
@@ -53,14 +53,14 @@ import router from "@/router";
 export default {
   name: 'IndexView',
   mounted() {
-    router.push("/home")
+    router.push("/chart")
   }
 };
 </script>
 
 <style scoped>
 .app-header{
-  margin-top: -50px;
+  margin-top: -70px;
 }
 .app-container {
   display: flex;
