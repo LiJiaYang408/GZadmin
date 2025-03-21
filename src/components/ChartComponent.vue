@@ -1,4 +1,5 @@
 <template>
+  <!-- 模板部分保持不变 -->
   <div class="container">
     <!-- 左边选择样本区域 -->
     <div class="left-panel">
@@ -45,121 +46,152 @@
   </div>
 </template>
 
-<script>
-import * as echarts from 'echarts';
-import axios from "axios";
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import * as echarts from 'echarts'
+// import axios from 'axios'
 
-export default {
-  name: 'SampleSiteInfo',
-  data() {
-    return {
-      chartInstance: null,
-      selectedSample: '',
-      samples: [],
-      chartDataMap: {}, // 用于存储每个样本对应的数据
-    };
-  },
-  computed: {
-    tableData() {
-      // 根据选中的样本返回对应的数据
-      return this.chartDataMap[this.selectedSample] || [];
-    },
-  },
-  mounted() {
-    this.fetchData();
-  },
-  beforeUnmount() {
-    if (this.chartInstance) {
-      this.chartInstance.dispose();
-    }
-  },
-  methods: {
-    async fetchData() {
-      // 模拟从后台获取数据
-      try {
-        // 这里应该是一个真实的API调用，例如：
-        const response = await axios.get('/table/getMitochondrialDetailAndSiteInfo');
-        const data = await response.data.data;
-        console.log(data)
-        this.samples = data.samples;
-        this.chartDataMap = data.chartDataMap;
+// 响应式数据
+const chartInstance = ref(null)
+const selectedSample = ref('')
+const samples = ref([])
+const chartDataMap = ref({})
+const chartDom = ref(null)
 
-        // 默认选择第一个样本
-        if (this.samples.length > 0) {
-          this.selectedSample = this.samples[0];
-          this.initChart();
-          this.updateChart();
-        }
-      } catch (error) {
-        console.error('获取数据失败:', error);
-      }
+// 计算属性
+const tableData = computed(() => {
+  return chartDataMap.value[selectedSample.value] || []
+})
+
+// 生命周期
+onMounted(() => {
+  // fetchData()
+  useMockData()
+})
+
+onBeforeUnmount(() => {
+  if (chartInstance.value) {
+    chartInstance.value.dispose()
+  }
+})
+
+// 方法
+const initChart = () => {
+  chartInstance.value = echarts.init(chartDom.value)
+  const option = {
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}: {c} ({d}%)'
     },
-    initChart() {
-      this.chartInstance = echarts.init(this.$refs.chartDom);
-      const option = {
-        tooltip: {
-          trigger: 'item',
-          formatter: '{b}: {c} ({d}%)',
-        },
-        legend: {
+    legend: {
+      show: false
+    },
+    series: [
+      {
+        type: 'pie',
+        radius: ['40%', '65%'],
+        avoidLabelOverlap: false,
+        label: {
           show: false,
+          position: 'center'
         },
-        series: [
-          {
-            type: 'pie',
-            radius: ['40%', '65%'], // 调整环形图的内外半径，使环更圆滑
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-              position: 'center',
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '18',
-                fontWeight: 'bold',
-              },
-            },
-            labelLine: {
-              show: false,
-            },
-            data: [],
-          },
-        ],
-      };
-      this.chartInstance.setOption(option);
-    },
-    updateChart() {
-      // 根据当前选中的样本数据更新图表
-      const data = this.tableData.map((item) => ({
-        name: `${item.base_position}${item.reference_base}`,
-        value: 1,
-      }));
-
-      // 更新图表数据
-      const option = {
-        series: [
-          {
-            data,
-          },
-        ],
-      };
-      this.chartInstance.setOption(option);
-    },
-    updateChartData(event) {
-      // 当选择不同的样本时，更新图表数据
-      this.selectedSample = event.target.value;
-      this.updateChart();
-    },
-    resizeChart() {
-      if (this.chartInstance) {
-        this.chartInstance.resize();
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '18',
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: []
       }
-    },
-  },
-};
-</script>
+    ]
+  }
+  chartInstance.value.setOption(option)
+}
 
+const updateChart = () => {
+  const data = tableData.value.map((item) => ({
+    name: `${item.base_position}${item.reference_base}`,
+    value: 1
+  }))
+
+  const option = {
+    series: [
+      {
+        data
+      }
+    ]
+  }
+  chartInstance.value.setOption(option)
+}
+
+const updateChartData = (event) => {
+  selectedSample.value = event.target.value
+  updateChart()
+}
+
+// const resizeChart = () => {
+//   if (chartInstance.value) {
+//     chartInstance.value.resize()
+//   }
+// }
+
+// 模拟数据方法
+const useMockData = () => {
+  samples.value = ['样本1', '样本2', '样本3', '样本4']
+  chartDataMap.value = {
+    样本1: [
+      { base_position: '73', mutant_base: 'A', reference_base: 'G' },
+      { base_position: '194', mutant_base: 'C', reference_base: 'A' },
+      { base_position: '248', mutant_base: 'A', reference_base: 'G' }
+    ],
+    样本2: [
+      { base_position: '436', mutant_base: 'C', reference_base: 'T' },
+      { base_position: '437', mutant_base: 'C', reference_base: 'T' },
+      { base_position: '489', mutant_base: 'T', reference_base: 'C' }
+    ],
+    样本3: [
+      { base_position: '511', mutant_base: 'C', reference_base: 'T' },
+      { base_position: '8020', mutant_base: 'G', reference_base: 'A' },
+      { base_position: '16129', mutant_base: 'G', reference_base: 'A' }
+    ],
+    样本4: [
+      { base_position: '16223', mutant_base: 'C', reference_base: 'T' },
+      { base_position: '16257', mutant_base: 'C', reference_base: 'T' },
+      { base_position: '16311', mutant_base: 'T', reference_base: 'C' },
+      { base_position: '16362', mutant_base: 'T', reference_base: 'C' },
+      { base_position: '16519', mutant_base: 'T', reference_base: 'C' }
+    ]
+  }
+
+  if (samples.value.length > 0) {
+    selectedSample.value = samples.value[0]
+    initChart()
+    updateChart()
+  }
+}
+
+// 如果需要真实数据，可以恢复这个方法
+/* const fetchData = async () => {
+  try {
+    const response = await axios.get('/table/getMitochondrialAndSiteInfo')
+    const data = response.data.data
+    samples.value = data.samples
+    chartDataMap.value = data.chartDataMap
+
+    if (samples.value.length > 0) {
+      selectedSample.value = samples.value[0]
+      initChart()
+      updateChart()
+    }
+  } catch (error) {
+    console.error('获取数据失败:', error)
+  }
+} */
+</script>
 <style scoped>
 .container {
   display: flex;

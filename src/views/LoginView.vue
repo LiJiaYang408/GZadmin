@@ -18,6 +18,7 @@
                 placeholder="账号"
                 v-model="formData.username"
                 @blur="validateUsername"
+                @keyup.enter="handleLogin"
             >
             <div class="error-message" v-if="errors.username">{{ errors.username }}</div>
           </div>
@@ -28,6 +29,7 @@
                 placeholder="密码"
                 v-model="formData.password"
                 @blur="validatePassword"
+                @keyup.enter="handleLogin"
             >
             <div class="error-message" v-if="errors.password">{{ errors.password }}</div>
           </div>
@@ -113,6 +115,8 @@ export default {
           console.log("登录成功");
           localStorage.setItem('token', response.data.data)
           await router.push("/index")
+        }else {
+          alert('登录失败，请检查账号和密码');
         }
       } catch (error) {
         console.error('登录失败:', error);
@@ -129,9 +133,9 @@ export default {
 
 .login-container {
   display: flex;
-  height: 100vh;
+  height: 98vh;
   width: 1885px;
-  margin-top: -60px;
+  margin-top: -80px;
 }
 
 .login-form {
@@ -241,5 +245,9 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+
+
+
+
 }
 </style>
