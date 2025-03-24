@@ -10,48 +10,56 @@
       <p>{{ error }}</p>
     </div>
 
-    <div v-else>
-      <div class="search-bar">
-        <input
-            type="text"
-            class="form-control"
-            v-model="searchQuery"
-            placeholder="搜索样本..."
-        />
+    <div v-else class="main-content">
+      <div class="left-panel">
+        <div class="search-bar">
+          <input
+              type="text"
+              class="form-control"
+              v-model="searchQuery"
+              placeholder="搜索样本..."
+          />
+        </div>
+
+        <table class="table">
+          <thead>
+          <tr>
+            <th>样本名</th>
+            <th>分析日期</th>
+            <th>原始数据名</th>
+            <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="detail in paginatedDetails" :key="detail.sample_name" @click="getData(detail.sample_name)">
+            <td>{{ detail.sample_name }}</td>
+            <td>{{ formatDate(detail.analysis_date) }}</td>
+            <td>{{ detail.original_data_name }}</td>
+            <td>
+              <button class="btn btn-primary" @click="goToSiteInfo(detail.sample_name)">
+                查看位点信息
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <nav v-if="totalPages > 1" class="pagination">
+          <button class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">
+            上一页
+          </button>
+          <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
+          <button class="btn btn-outline-primary" @click="nextPage" :disabled="currentPage === totalPages">
+            下一页
+          </button>
+        </nav>
       </div>
 
-      <table class="table">
-        <thead>
-        <tr>
-          <th>样本名</th>
-          <th>分析日期</th>
-          <th>原始数据名</th>
-          <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="detail in paginatedDetails" :key="detail.sample_name">
-          <td>{{ detail.sample_name }}</td>
-          <td>{{ formatDate(detail.analysis_date) }}</td>
-          <td>{{ detail.original_data_name }}</td>
-          <td>
-            <button class="btn btn-primary" @click="goToSiteInfo(detail.sample_name)">
-              查看位点信息
-            </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-
-      <nav v-if="totalPages > 1" class="pagination">
-        <button class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">
-          上一页
-        </button>
-        <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
-        <button class="btn btn-outline-primary" @click="nextPage" :disabled="currentPage === totalPages">
-          下一页
-        </button>
-      </nav>
+      <!-- 中间环形图区域 -->
+      <div class="right-panel">
+        <h2>样本位点信息</h2>
+        <PieChart :tableData="table" />
+      </div>
     </div>
   </div>
 </template>
@@ -60,8 +68,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import PieChart from "@/components/PieChart";
 
 export default {
+  components: {PieChart},
   setup() {
     const router = useRouter()
     const details = ref([])
@@ -70,6 +80,7 @@ export default {
     const searchQuery = ref('')
     const currentPage = ref(1)
     const itemsPerPage = 5
+    const table = ref([])
 
     // 从后端获取数据
     const fetchData = async () => {
@@ -81,6 +92,11 @@ export default {
         loading.value = false
         error.value = '获取数据失败: ' + (err.response?.data?.message || err.message)
       }
+    }
+
+    const getData = async (sampleName) => {
+      const response = await axios.get('/table/getMitochondrialDetailDetails?name='+sampleName)
+      table.value=response.data.data
     }
 
     // 格式化日期
@@ -149,7 +165,9 @@ export default {
       paginatedDetails,
       totalPages,
       prevPage,
-      nextPage
+      nextPage,
+      getData,
+      table
     }
   }
 }
@@ -182,6 +200,12 @@ h1 {
 .error {
   color: #dc3545;
 }
+
+.main-content {
+  display: flex;
+  gap: 20px;
+}
+
 
 .search-bar {
   margin-bottom: 20px;
