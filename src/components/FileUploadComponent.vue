@@ -1,23 +1,28 @@
 <template>
   <div class="upload-container">
-    <div 
-      class="drop-area"
-      @dragover.prevent="onDragOver"
-      @dragleave="onDragLeave"
-      @drop.prevent="onDrop"
-      :class="{ 'drag-active': isDragging }"
-    >
-      <input
-        type="file"
-        ref="fileInput"
-        @change="handleFileSelect"
-        style="display: none"
-        accept=".xlsx,.xls,.csv"
-      />
-      <p>将文件拖拽至此区域或<em @click="triggerFileInput">点击选择文件</em></p>
-      <p v-if="selectedFile">已选择文件：{{ selectedFile.name }}</p>
+    <h3>文件上传</h3>
+    <div class="drag-upload"
+         @dragenter="handleDragEnter"
+         @dragover="handleDragOver"
+         @dragleave="handleDragLeave"
+         @drop="handleDrop">
+      <input type="file" ref="fileInput" @change="handleFileChange" accept="*">
+      <div v-if="!file" class="upload-placeholder">
+        <i class="icon-upload"></i>
+        <p>拖拽或 点击上传</p>
+        <span>只选一份文件 默认与数据库数据比对</span>
+      </div>
+      <div v-if="file" class="file-info">{{ file.name }}</div>
     </div>
-    <button @click="uploadFile" :disabled="!selectedFile">上传到数据库</button>
+    <div class="upload-options">
+      <label>
+        <input type="radio" v-model="uploadType" value="whole"> 整段
+      </label>
+      <label>
+        <input type="radio" v-model="uploadType" value="segment"> 分段
+      </label>
+      <button class="confirm-btn" @click="handleUpload">确认上传</button>
+    </div>
   </div>
 </template>
 
@@ -25,87 +30,119 @@
 import { ref } from 'vue';
 import axios from 'axios';
 
+const file = ref(null);
+const uploadType = ref('whole');
 const fileInput = ref(null);
-const selectedFile = ref(null);
-const isDragging = ref(false);
 
-const triggerFileInput = () => {
-  fileInput.value.click();
+// 文件选择处理
+const handleFileChange = (e) => {
+  file.value = e.target.files[0];
 };
 
-const onDragOver = (event) => {
-  isDragging.value = true;
-  event.dataTransfer.dropEffect = 'copy';
+// 拖拽事件处理
+const handleDragEnter = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+const handleDragOver = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+const handleDragLeave = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+const handleDrop = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  file.value = e.dataTransfer.files[0];
 };
 
-const onDragLeave = () => {
-  isDragging.value = false;
-};
-
-const onDrop = (event) => {
-  isDragging.value = false;
-  const files = event.dataTransfer.files;
-  if (files.length > 0) {
-    selectedFile.value = files[0];
+// 上传处理
+const handleUpload = async () => {
+  if (!file.value) {
+    alert('请选择文件');
+    return;
   }
-};
 
-const handleFileSelect = (event) => {
-  const files = event.target.files;
-  if (files.length > 0) {
-    selectedFile.value = files[0];
-  }
-};
-
-const uploadFile = async () => {
-  if (!selectedFile.value) return;
-  
   const formData = new FormData();
-  formData.append('file', selectedFile.value);
+  formData.append('file', file.value);
+  formData.append('uploadType', uploadType.value);
 
-  try {
+
     const response = await axios.post('/api/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
-    console.log('上传成功:', response.data);
-    alert('文件上传成功，数据已存储到数据库');
-    selectedFile.value = null;
-  } catch (error) {
-    console.error('上传失败:', error);
-    alert('文件上传失败，请检查文件格式');
-  }
+    if (response && response.data && response.data.message) {
+      alert('上传成功：' + response.data.message);
+    } else {
+      alert('上传成功，但响应信息格式有误');
+    }
+
 };
 </script>
-
 <style scoped>
-/* 保持原有样式不变 */
 .upload-container {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 20px;
+  width: 100%; /* 容器占满父级宽度 */
+  max-width: 100%; /* 最大宽度限制，可按需调整 */
+  margin: 20px auto;
 }
 
-.drop-area {
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-  padding: 30px;
+.drag-upload {
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  padding: 80px 40px;
   text-align: center;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease;
-  min-height: 200px;
+  cursor: pointer;
+  position: relative;
+  width: 100%; /* 上传区域占满容器宽度 */
+  box-sizing: border-box; /* 确保内边距不影响宽度 */
+}
+
+.drag-upload input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-placeholder {
+  color: #666;
+}
+
+.upload-placeholder .icon-upload {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  background: url('@/assets/upload.png') no-repeat center;
+  background-size: contain;
+  margin-bottom: 20px;
+}
+
+.file-info {
+  color: #333;
+  margin-top: 20px;
+}
+
+.upload-options {
+  margin-top: 20px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-bottom: 1rem;
+  gap: 20px;
 }
 
-.drag-active {
-  border-color: #409eff;
-  background-color: #f0f7ff;
+.upload-options label {
+  margin-right: 0;
 }
 
-/* 其余样式保持不变... */
+.confirm-btn {
+  padding: 8px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 </style>
-

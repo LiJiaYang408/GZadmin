@@ -1,0 +1,35 @@
+.main-content {
+    display: flex;
+    flex-wrap: nowrap ;
+}
+
+.content-wrapper {
+    display: flex;
+    flex: 1;
+}
+
+.table-section {
+    flex: 2;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-section {
+    flex: 1;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 767.98px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+    .table-section,
+    .chart-section {
+        width: 100%;
+    }
+}

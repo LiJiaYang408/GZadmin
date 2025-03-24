@@ -27,8 +27,8 @@
           <thead>
           <tr>
             <th>位点</th>
-            <th>样本序列</th>
-            <th>标准序列</th>
+            <th>突变碱基</th>
+            <th>参考碱基</th>
             <th>类型</th>
           </tr>
           </thead>
@@ -67,7 +67,6 @@ onMounted(() => {
   // useMockData()
 });
 
-// 如果需要真实数据，可以恢复这个方法
 const fetchData = async () => {
   try {
     const response = await axios.get('/table/getMitochondrialAndSiteInfo');
@@ -133,7 +132,7 @@ select {
 .table-container {
   width: 100%;
   max-height: 400px;
-  /*overflow-y: overlay; !* 使用overlay确保滚动条不占用额外空间 *!*/
+  overflow-y: overlay; /* 使用overlay确保滚动条不占用额外空间 */
 }
 
 /* 美化滚动条 */

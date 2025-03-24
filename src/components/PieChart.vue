@@ -1,5 +1,23 @@
 <template>
   <div class="chart-container">
+    <div class="legend-container">
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #fd6f6f;"></span>
+        <span class="legend-text">T</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #9fe080;"></span>
+        <span class="legend-text">G</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #7ed3f4;"></span>
+        <span class="legend-text">C</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: #ffdc60;"></span>
+        <span class="legend-text">A</span>
+      </div>
+    </div>
     <div ref="chartDom" class="chart"></div>
   </div>
 </template>
@@ -43,12 +61,11 @@ const initChart = () => {
   const option = {
     tooltip: {
       trigger: 'item',
-      // 自定义 tooltip 内容，不显示百分比
       formatter: function (params) {
         if (params.name === '无数据') {
-          return ''; // 触碰无数据区域时不显示提示
+          return '';
         }
-        return `${params.name}: ${params.value}`;
+        return `${params.name}`;
       }
     },
     legend: {
@@ -65,7 +82,7 @@ const initChart = () => {
         },
         emphasis: {
           label: {
-            show: (params) => params.data.name!== '无数据',
+            show: (params) => params.data.name !== '无数据',
             fontSize: '18',
             fontWeight: 'bold'
           }
@@ -82,14 +99,14 @@ const initChart = () => {
 
 const updateChart = () => {
   const colorMap = {
-    'T': '#d0134a',
-    'G': '#ffa500',
-    'C': '#0000ff',
-    'A': '#00ff00'
+    'C': '#7ed3f4',
+    'A': '#ffdc60',
+    'T': '#fd6f6f',
+    'G': '#9fe080'
   };
 
   const data = tableDataRef.value.map((item) => {
-    const color = item.type!== 'SNP'? 'yellow' : colorMap[item.reference_base];
+    const color = item.type !== 'SNP' ? 'yellow' : colorMap[item.reference_base];
     return {
       name: `${item.base_position}${item.reference_base}`,
       value: 1,
@@ -102,24 +119,23 @@ const updateChart = () => {
 
   const totalPositions = 16569;
   const dataCount = data.length;
-  const emptyValue = (totalPositions * 0.7) / (0.3) * dataCount / totalPositions;
+  const emptyValue = (totalPositions * 0.75) / (0.25) * dataCount / totalPositions;
 
   const emptyData = {
     name: '无数据',
     itemStyle: {
-      color: 'rgba(0, 0, 0, 0.1)' // 无数据部分颜色设为半透明
+      color: 'rgba(0, 0, 0, 0.1)'
     }
   };
 
   const finalData = [];
 
   if (dataCount === 0) {
-    finalData.push({...emptyData, value: emptyValue});
+    finalData.push({ ...emptyData, value: emptyValue });
   } else {
-    // 处理第一个数据项之前的无数据部分
-    const firstEmptyValue = data[0].base_position > 1? (data[0].base_position - 1) / totalPositions * emptyValue : 0;
+    const firstEmptyValue = data[0].base_position > 1 ? (data[0].base_position - 1) / totalPositions * emptyValue : 0;
     if (firstEmptyValue > 0) {
-      finalData.push({...emptyData, value: firstEmptyValue});
+      finalData.push({ ...emptyData, value: firstEmptyValue });
     }
 
     for (let i = 0; i < dataCount; i++) {
@@ -128,15 +144,14 @@ const updateChart = () => {
         const gap = data[i + 1].base_position - data[i].base_position - 1;
         const gapEmptyValue = gap / totalPositions * emptyValue;
         if (gapEmptyValue > 0) {
-          finalData.push({...emptyData, value: gapEmptyValue});
+          finalData.push({ ...emptyData, value: gapEmptyValue });
         }
       }
     }
 
-    // 处理最后一个数据项之后的无数据部分
-    const lastEmptyValue = totalPositions - data[dataCount - 1].base_position > 0? (totalPositions - data[dataCount - 1].base_position) / totalPositions * emptyValue : 0;
+    const lastEmptyValue = totalPositions - data[dataCount - 1].base_position > 0 ? (totalPositions - data[dataCount - 1].base_position) / totalPositions * emptyValue : 0;
     if (lastEmptyValue > 0) {
-      finalData.push({...emptyData, value: lastEmptyValue});
+      finalData.push({ ...emptyData, value: lastEmptyValue });
     }
   }
 
@@ -153,12 +168,35 @@ const updateChart = () => {
 
 <style scoped>
 .chart-container {
-  width: 100%;
-  height: 350px;
-  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 350px;
+  margin-top: 20px;
+}
+
+.legend-container {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.legend-color {
+  width: 15px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+
+.legend-text {
+  font-size: 14px;
 }
 
 .chart {
