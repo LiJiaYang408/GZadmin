@@ -16,7 +16,7 @@
     <!-- 中间环形图区域 -->
     <div class="middle-panel">
       <h2>样本位点信息</h2>
-      <PieChart :tableData="tableData" />
+      <PieChart :tableData="tableData"/>
     </div>
 
     <!-- 右边表格区域 -->

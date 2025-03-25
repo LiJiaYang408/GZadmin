@@ -16,10 +16,10 @@
     </div>
     <div class="upload-options">
       <label>
-        <input type="radio" v-model="uploadType" value="whole"> 整段
+        <input type="radio" v-model="uploadType" value="whole">Excel
       </label>
       <label>
-        <input type="radio" v-model="uploadType" value="segment"> 分段
+        <input type="radio" v-model="uploadType" value="segment"> Vcf
       </label>
       <button class="confirm-btn" @click="handleUpload">确认上传</button>
     </div>
@@ -69,7 +69,7 @@ const handleUpload = async () => {
   formData.append('file', file.value);
   formData.append('uploadType', uploadType.value);
 
-
+  try {
     const response = await axios.post('/api/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
@@ -78,7 +78,13 @@ const handleUpload = async () => {
     } else {
       alert('上传成功，但响应信息格式有误');
     }
-
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.message) {
+      alert('上传失败：' + error.response.data.message);
+    } else {
+      alert('上传失败：未知错误');
+    }
+  }
 };
 </script>
 <style scoped>
