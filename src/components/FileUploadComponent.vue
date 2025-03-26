@@ -19,7 +19,7 @@
         <input type="radio" v-model="uploadType" value="whole">Excel
       </label>
       <label>
-        <input type="radio" v-model="uploadType" value="segment"> Vcf
+        <input type="radio" v-model="uploadType" value="segment">Vcf
       </label>
       <button class="confirm-btn" @click="handleUpload">确认上传</button>
     </div>

@@ -6,6 +6,7 @@ import SiteInfo from '../components/SiteInfo';
 import IndexView from "@/views/IndexView";
 import FileUpload from "@/components/FileUploadComponent"
 import Comparison from "@/components/ComparisonComponent"
+import TwoComComponent from "@/components/TwoComComponent";
 
 const routes = [
     {
@@ -43,6 +44,11 @@ const routes = [
                 path: '/comparison',
                 name: 'Comparison',
                 component: Comparison,
+            },
+            {
+                path: '/twoComComponent',
+                name: 'TwoComComponent',
+                component: TwoComComponent,
             },
         ]
     }

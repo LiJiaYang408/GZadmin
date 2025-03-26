@@ -62,6 +62,13 @@ export default {
 .app-header{
   margin-top: -70px;
 }
+/*.app-container {*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*  width: 1870px;*/
+/*  height: 880px;*/
+/*}*/
+
 .app-container {
   display: flex;
   flex-direction: column;

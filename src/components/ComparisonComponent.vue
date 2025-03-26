@@ -15,23 +15,21 @@
       <tr>
         <th>目标样本名</th>
         <th>比对样本名</th>
-        <th>步长</th>
-        <th>单倍群</th>
+        <th>容差</th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="item in filterData" :key="item.compareSample">
-        <td>{{ item.targetSample }}</td>
+      <tr v-for="item in filterData" :key="item.target_sample_name">
+        <td>{{ item.target_sample_name }}</td>
         <td>
             <span
                 class="clickable-sample"
-                @click="handleViewDetail(item.compareSample)"
+                @click="handleViewDetail(item.target_sample_name,item.compare_sample_name)"
             >
-              {{ item.compareSample }}
+              {{ item.compare_sample_name }}
             </span>
         </td>
         <td>{{ item.step }}</td>
-        <td>{{ item.group }}</td>
       </tr>
       </tbody>
     </table>
@@ -59,20 +57,28 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import {ref, computed, onMounted} from 'vue';
+import router from "@/router";
+import axios from "axios";
 
-const sampleData = ref([
-  { targetSample: 'MT-Target001', compareSample: 'MT-Target001', step: 0, group: 'MT-D8001' },
-  { targetSample: 'MT-Target001', compareSample: 'MT-Target002', step: 2, group: 'MT-DB001' },
-  { targetSample: 'MT-Target001', compareSample: 'MT-Target003', step: 4, group: 'MT-DB003' },
-  { targetSample: 'MT-Target001', compareSample: 'MT-Target004', step: 1, group: 'MT-DB003' },
-  { targetSample: 'MT-Target001', compareSample: 'MT-Target005', step: 8, group: 'MT-DB005' },
-  { targetSample: 'MT-Target001', compareSample: 'MT-Target005', step: 8, group: 'MT-DB005' },
-]);
+// const sampleData = ref([
+//   { targetSample: 'MT-Target001', compareSample: 'MT-Target001', step: 0 },
+//   { targetSample: 'MT-Target001', compareSample: 'MT-Target002', step: 2 },
+//   { targetSample: 'MT-Target001', compareSample: 'MT-Target003', step: 4 },
+//   { targetSample: 'MT-Target001', compareSample: 'MT-Target004', step: 1 },
+//   { targetSample: 'MT-Target001', compareSample: 'MT-Target005', step: 8 },
+//   { targetSample: 'MT-Target001', compareSample: 'MT-Target005', step: 8 },
+// ]);
 
+const sampleData = ref([])
 const searchValue = ref('');
 const currentPage = ref(1);
 const itemsPerPage = ref(5);
+
+const getAllCom = async () => {
+  const response = await axios.get('/comparison/getAllCom')
+  sampleData.value = response.data.data
+}
 
 // 计算总页数
 const totalPages = computed(() => {
@@ -95,13 +101,16 @@ const filterData = computed(() => {
 const prevPage = () => currentPage.value--;
 const nextPage = () => currentPage.value++;
 
-const handleViewDetail = (sampleId) => {
-  console.log('查看详情', sampleId);
+const handleViewDetail = (sample1,sample2) => {
+  console.log(sample1,sample2)
+  router.push({ path: `/twoComComponent`, query: { sampleName1: sample1,sampleName2:sample2 } })
 };
+onMounted(()=>{
+  getAllCom()
+})
 </script>
 
 <style scoped>
-/* 原有样式 */
 .database-compare-container {
   padding: 20px;
   width: 100%;
