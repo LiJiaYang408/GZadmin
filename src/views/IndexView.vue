@@ -1,5 +1,5 @@
 <template>
-  <div className="app-container">
+  <div class="app-container">
     <!-- 头部 -->
     <header className="app-header">
       <div>
@@ -13,28 +13,28 @@
       <aside className="sidebar">
         <ul className="nav-menu">
           <router-link to="/chart">
-          <li>
+            <li>
               <img src="@/assets/chart.png" class="el-aside-img">
               <span>图表数据</span>
-          </li>
+            </li>
           </router-link>
           <router-link to="/mitochondrialDetail">
-          <li>
-            <img src="@/assets/tabulation.png" class="el-aside-img">
+            <li>
+              <img src="@/assets/tabulation.png" class="el-aside-img">
               <span>表格数据</span>
-          </li>
+            </li>
           </router-link>
           <router-link to="/fileUpload">
-          <li>
-            <img src="@/assets/FileUpload.png" class="el-aside-img">
-            <span>文件上传</span>
-          </li>
+            <li>
+              <img src="@/assets/FileUpload.png" class="el-aside-img">
+              <span>文件上传</span>
+            </li>
           </router-link>
           <router-link to="/comparison">
-          <li>
+            <li>
               <img src="@/assets/comparison.png" class="el-aside-img">
               <span>数据比对</span>
-          </li>
+            </li>
           </router-link>
         </ul>
       </aside>
@@ -62,18 +62,12 @@ export default {
 .app-header{
   margin-top: -70px;
 }
-/*.app-container {*/
-/*  display: flex;*/
-/*  flex-direction: column;*/
-/*  width: 1870px;*/
-/*  height: 880px;*/
-/*}*/
 
 .app-container {
   display: flex;
   flex-direction: column;
-  width: 1870px;
-  height: 880px;
+  width: 100vw; /* 使用视口宽度单位设置宽度 */
+  height: 100vh; /* 使用视口高度单位设置高度 */
 }
 
 .el-header-img{
@@ -85,7 +79,6 @@ export default {
   display: flex;
   align-items: center;
 }
-
 
 .app-content {
   margin-top: -10px;

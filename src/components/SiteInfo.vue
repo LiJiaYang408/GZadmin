@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="containerSiteInfo">
     <h1>位点信息 - 样本: {{ sampleName }}</h1>
 
     <div class="search-bar">
@@ -124,10 +124,12 @@ body {
   background-color: #f5f5f5;
 }
 
-.container {
+.containerSiteInfo {
   padding: 20px;
   border-radius: 8px;
   height: 770px;
+  width: 100%; /* 使用百分比宽度 */
+  box-sizing: border-box; /* 确保内边距包含在宽度内 */
 }
 
 h1 {
@@ -146,6 +148,9 @@ h1 {
   padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+  white-space: nowrap; /* 防止表格内容换行 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 
 .table th {
@@ -160,7 +165,6 @@ h1 {
   border-radius: 4px;
   cursor: pointer;
 }
-
 
 .table tr:hover {
   background-color: #f1f1f1;
@@ -206,4 +210,3 @@ h1 {
   padding: 5px 10px;
 }
 </style>
-
