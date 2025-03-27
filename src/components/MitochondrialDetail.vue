@@ -194,6 +194,7 @@ h1 {
 
 .table th,
 .table td {
+  min-width: 150px; /* 关键列设置最小宽度 */
   padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #ddd;
