@@ -64,113 +64,82 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, computed } from 'vue'
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import PieChart from "@/components/PieChart";
+import PieChart from "@/components/PieChart"
 
-export default {
-  components: {PieChart},
-  setup() {
-    const router = useRouter()
-    const details = ref([])
-    const loading = ref(true)
-    const error = ref(null)
-    const searchQuery = ref('')
-    const currentPage = ref(1)
-    const itemsPerPage = 5
-    const table = ref([])
+const router = useRouter()
 
-    // 从后端获取数据
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/table/getMitochondrialDetailAll')
-        details.value = response.data.data
-        loading.value = false
-      } catch (err) {
-        loading.value = false
-        error.value = '获取数据失败: ' + (err.response?.data?.message || err.message)
-      }
-    }
+// 响应式数据
+const details = ref([])
+const loading = ref(true)
+const error = ref(null)
+const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 5
+const table = ref([])
 
-    const getData = async (sampleName) => {
-      const response = await axios.get('/table/getMitochondrialDetailDetails?name='+sampleName)
-      table.value=response.data.data
-    }
+// 生命周期
+onMounted(() => {
+  fetchData()
+})
 
-    // 格式化日期
-    const formatDate = (dateString) => {
-      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
-      return new Date(dateString).toLocaleDateString('zh-CN', options)
-    }
-
-    // 计算属性：过滤后的详细信息列表
-    const filteredDetails = computed(() => {
-      return details.value.filter(detail => {
-        return (
-            detail.sample_name.includes(searchQuery.value) ||
-            formatDate(detail.analysis_date).includes(searchQuery.value) ||
-            detail.original_data_name.includes(searchQuery.value)
-        )
-      })
-    })
-
-    // 计算属性：分页后的详细信息列表
-    const paginatedDetails = computed(() => {
-      const start = (currentPage.value - 1) * itemsPerPage
-      const end = start + itemsPerPage
-      return filteredDetails.value.slice(start, end)
-    })
-
-    // 计算属性：总页数
-    const totalPages = computed(() => {
-      return Math.ceil(filteredDetails.value.length / itemsPerPage)
-    })
-
-    // 跳转到位点信息页面
-    const goToSiteInfo = (sampleName) => {
-      router.push({ path: `/siteInfo`, query: { sampleName: sampleName } })
-    }
-
-    // 上一页
-    const prevPage = () => {
-      if (currentPage.value > 1) {
-        currentPage.value--
-      }
-    }
-
-    // 下一页
-    const nextPage = () => {
-      if (currentPage.value < totalPages.value) {
-        currentPage.value++
-      }
-    }
-
-    // 在组件挂载时获取数据
-    onMounted(() => {
-      fetchData()
-    })
-
-    return {
-      details,
-      loading,
-      error,
-      searchQuery,
-      currentPage,
-      itemsPerPage,
-      formatDate,
-      goToSiteInfo,
-      filteredDetails,
-      paginatedDetails,
-      totalPages,
-      prevPage,
-      nextPage,
-      getData,
-      table
-    }
+// 方法定义
+const fetchData = async () => {
+  try {
+    const response = await axios.get('/table/getMitochondrialDetailAll')
+    details.value = response.data.data
+    loading.value = false
+  } catch (err) {
+    loading.value = false
+    error.value = '获取数据失败: ' + (err.response?.data?.message || err.message)
   }
 }
+
+const getData = async (sampleName) => {
+  const response = await axios.get(`/table/getMitochondrialDetailDetails?name=${sampleName}`)
+  table.value = response.data.data
+}
+
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+  return new Date(dateString).toLocaleDateString('zh-CN', options)
+}
+
+const goToSiteInfo = (sampleName) => {
+  router.push({ path: '/siteInfo', query: { sampleName } })
+}
+
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+
+// 计算属性
+const filteredDetails = computed(() => {
+  return details.value.filter(detail => {
+    return (
+        detail.sample_name.includes(searchQuery.value) ||
+        formatDate(detail.analysis_date).includes(searchQuery.value) ||
+        detail.original_data_name.includes(searchQuery.value)
+    )
+  })
+})
+
+const paginatedDetails = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredDetails.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredDetails.value.length / itemsPerPage)
+})
 </script>
 
 <style>
@@ -182,7 +151,6 @@ body {
 }
 
 .container {
-  max-width: 1200px;
   padding: 20px;
   border-radius: 8px;
 }

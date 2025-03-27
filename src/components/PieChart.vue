@@ -119,7 +119,7 @@ const updateChart = () => {
 
   const totalPositions = 16569;
   const dataCount = data.length;
-  const emptyValue = (totalPositions * 0.9) / (0.1) * dataCount / totalPositions;
+  const emptyValue = (totalPositions * 0.8) / (0.2) * dataCount / totalPositions;
 
   const emptyData = {
     name: '无数据',

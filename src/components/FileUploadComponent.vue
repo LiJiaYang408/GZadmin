@@ -69,6 +69,14 @@ const handleUpload = async () => {
   formData.append('file', file.value);
   formData.append('uploadType', uploadType.value);
 
+  if (uploadType.value === 'segment') {
+    const inputValue = prompt('请输入样本名');
+    if (inputValue === null) {
+      return;
+    }
+    formData.append('inputValue', inputValue);
+  }
+
   try {
     const response = await axios.post('/api/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }

@@ -47,93 +47,74 @@
   </div>
 </template>
 
-<script>
-import {ref, computed, onMounted} from 'vue'
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import router from "@/router";
-import axios from "axios";
+import router from "@/router"
+import axios from "axios"
 
-export default {
-  setup() {
-    const route = useRoute()
+// 获取路由参数
+const route = useRoute()
+const sampleName = route.query.sampleName
 
-    // 获取路由中的样本名
-    const sampleName = route.query.sampleName
+// 响应式数据
+const sites = ref([])
+const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 10
 
-    // 位点信息数据
-    const sites = ref([])
-    // 从后端获取数据
-    const fetchData = async () => {
-        const response = await axios.get('/table/getMitochondrialDetailDetails?name='+sampleName)
-        sites.value = response.data.data
-    }
-    // 搜索查询
-    const searchQuery = ref('')
+// 生命周期
+onMounted(() => {
+  fetchData()
+})
 
-    // 分页相关
-    const currentPage = ref(1)
-    const itemsPerPage = 10
-
-    // 计算属性：过滤后的位点列表
-    const filteredSites = computed(() => {
-      return sites.value
-          .filter(site => site.sample_name === sampleName)
-          .filter(site => {
-            return (
-                site.base_position.toString().includes(searchQuery.value) ||
-                site.reference_base.includes(searchQuery.value) ||
-                site.mutant_base.includes(searchQuery.value) ||
-                site.total_depth.toString().includes(searchQuery.value) ||
-                site.heterogeneity.toString().includes(searchQuery.value) ||
-                site.type.includes(searchQuery.value)
-            )
-          })
-          .slice((currentPage.value - 1) * itemsPerPage, currentPage.value * itemsPerPage)
-    })
-
-    // 计算属性：总页数
-    const totalPages = computed(() => {
-      return Math.ceil(
-          sites.value.filter(site => site.sample_name === sampleName).length / itemsPerPage
-      )
-    })
-
-    // 返回上一个页面
-    const goBack = () => {
-      router.go(-1)
-    }
-
-    // 上一页
-    const prevPage = () => {
-      if (currentPage.value > 1) {
-        currentPage.value--
-      }
-    }
-
-    // 下一页
-    const nextPage = () => {
-      if (currentPage.value < totalPages.value) {
-        currentPage.value++
-      }
-    }
-
-    onMounted(()=>{
-      fetchData()
-    })
-
-    return {
-      sampleName,
-      searchQuery,
-      filteredSites,
-      currentPage,
-      totalPages,
-      prevPage,
-      nextPage,
-      goBack
-    }
+// 方法定义
+const fetchData = async () => {
+  try {
+    const response = await axios.get(`/table/getMitochondrialDetailDetails?name=${sampleName}`)
+    sites.value = response.data.data
+  } catch (err) {
+    console.error('获取数据失败:', err)
   }
 }
+
+const goBack = () => {
+  router.go(-1)
+}
+
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+
+// 计算属性
+const filteredSites = computed(() => {
+  return sites.value
+      .filter(site => site.sample_name === sampleName)
+      .filter(site => {
+        const query = searchQuery.value.toLowerCase()
+        return (
+            site.base_position.toString().toLowerCase().includes(query) ||
+            site.reference_base.toLowerCase().includes(query) ||
+            site.mutant_base.toLowerCase().includes(query) ||
+            site.total_depth.toString().toLowerCase().includes(query) ||
+            site.heterogeneity.toString().toLowerCase().includes(query) ||
+            site.type.toLowerCase().includes(query)
+        )
+      })
+      .slice((currentPage.value - 1) * itemsPerPage, currentPage.value * itemsPerPage)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(
+      sites.value.filter(site => site.sample_name === sampleName).length / itemsPerPage
+  )
+})
 </script>
+
 
 <style>
 body {
@@ -144,7 +125,6 @@ body {
 }
 
 .container {
-  max-width: 1200px;
   padding: 20px;
   border-radius: 8px;
   height: 770px;
@@ -209,7 +189,7 @@ h1 {
 }
 
 .form-control {
-  width: 1170px;
+  width: 100%;
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;

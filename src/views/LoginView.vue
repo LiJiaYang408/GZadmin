@@ -1,14 +1,14 @@
 <template>
-  <div className="login-container">
+  <div class="login-container">
     <!-- 左侧表单区域 -->
-    <div className="login-form">
-      <div className="logo-container">
-        <img src="@/assets/logo.png" alt="Deep Reads Biotech Logo" className="logo" style="margin: 0 auto;">
+    <div class="login-form">
+      <div class="logo-container">
+        <img src="@/assets/logo.png" alt="Deep Reads Biotech Logo" class="logo" style="margin: 0 auto;">
       </div>
 
-      <div className="login-content">
-        <h1 className="title">FIMTA法庭科学二代测序线粒体分析比对软件</h1>
-        <p className="subtitle">"十四五"拐卖人口犯罪精准识别及预警技术研究</p>
+      <div class="login-content">
+        <h1 class="title">FIMTA法庭科学二代测序线粒体分析比对软件</h1>
+        <p class="subtitle">"十四五"拐卖人口犯罪精准识别及预警技术研究</p>
 
         <form class="form" @submit.prevent="handleLogin">
           <div class="form-group">
@@ -38,7 +38,7 @@
           </div>
         </form>
 
-        <div className="footer">
+        <div class="footer">
           <p>版权所有2020 广州深晓基因科技有限公司 All Rights Reserved</p>
           <p>V1.0</p>
         </div>
@@ -46,88 +46,170 @@
     </div>
 
     <!-- 右侧背景图区域 -->
-    <div className="login-background">
-      <img src="@/assets/loginRight.png" alt="Background" className="background-img">
+    <div class="login-background">
+      <img src="@/assets/loginRight.png" alt="Background" class="background-img">
     </div>
   </div>
-
 </template>
 
-<script>
-import axios from "axios";
-import router from "@/router";
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
 
-export default {
-  name: 'LoginView',
-  data() {
-    return {
-      formData: {
-        username: '',
-        password: ''
-      },
-      errors: {
-        username: '',
-        password: ''
-      },
-      isSubmitting: false
+// 响应式数据
+const router = useRouter()
+const formData = ref({
+  username: '',
+  password: ''
+})
+const errors = ref({
+  username: '',
+  password: ''
+})
+const isSubmitting = ref(false)
+
+// 验证函数
+const validateUsername = () => {
+  if (!formData.value.username.trim()) {
+    errors.value.username = '账号不能为空'
+    return false
+  }
+  errors.value.username = ''
+  return true
+}
+
+const validatePassword = () => {
+  if (!formData.value.password.trim()) {
+    errors.value.password = '密码不能为空'
+    return false
+  }
+  errors.value.password = ''
+  return true
+}
+
+// 提交处理
+const handleLogin = async () => {
+  if (!validateUsername() || !validatePassword()) return
+
+  isSubmitting.value = true
+
+  try {
+    const response = await axios.post('/api/auth/login', formData.value, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (response.data.code === 200) {
+      localStorage.setItem('token', response.data.data)
+      await router.push('/index')
+    } else {
+      alert('登录失败，请检查账号和密码')
     }
-  },
-  methods: {
-    validateUsername() {
-      if (!this.formData.username.trim()) {
-        this.errors.username = '账号不能为空';
-        return false;
-      }
-      this.errors.username = '';
-      return true;
-    },
-    validatePassword() {
-      if (!this.formData.password.trim()) {
-        this.errors.password = '密码不能为空';
-        return false;
-      }
-      this.errors.password = '';
-      return true;
-    },
-    validateForm() {
-      let isValid = true;
-
-      if (!this.validateUsername()) isValid = false;
-      if (!this.validatePassword()) isValid = false;
-
-      return isValid;
-    },
-    async handleLogin() {
-      if (!this.validateForm()) {
-        return;
-      }
-
-      this.isSubmitting = true;
-
-      try {
-
-        const response = await axios.post('/api/auth/login', this.formData, {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-        if (response.data.code===200){
-          console.log("登录成功");
-          localStorage.setItem('token', response.data.data)
-          await router.push("/index")
-        }else {
-          alert('登录失败，请检查账号和密码');
-        }
-      } catch (error) {
-        console.error('登录失败:', error);
-        alert('登录失败，请检查账号和密码');
-      } finally {
-        this.isSubmitting = false;
-      }
-    }
+  } catch (error) {
+    console.error('登录失败:', error)
+    alert('登录失败，请检查账号和密码')
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
+
+<style scoped>
+.login-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.login-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+}
+
+.logo-container {
+  margin-bottom: 30px;
+}
+
+.logo {
+  width: 200px;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #1a73e8;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.form {
+  width: 300px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-login:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+}
+
+.login-background {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+}
+
+.background-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+</style>
 
 <style scoped>
 

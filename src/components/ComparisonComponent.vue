@@ -1,171 +1,319 @@
 <template>
-  <div class="database-compare-container">
-    <h1>数据对比</h1>
-    <div class="search-container">
-      <input
-          type="text"
-          class="form-control"
-          v-model="searchValue"
-          placeholder="请输入......"
-      />
+  <div class="container">
+    <h1>线粒体详细信息</h1>
+
+    <div v-if="loading" class="loading">
+      <p>加载中...</p>
     </div>
 
-    <table class="compare-table">
-      <thead>
-      <tr>
-        <th>目标样本名</th>
-        <th>比对样本名</th>
-        <th>容差</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="item in filterData" :key="item.target_sample_name">
-        <td>{{ item.target_sample_name }}</td>
-        <td>
-            <span
-                class="clickable-sample"
-                @click="handleViewDetail(item.target_sample_name,item.compare_sample_name)"
-            >
-              {{ item.compare_sample_name }}
-            </span>
-        </td>
-        <td>{{ item.step }}</td>
-      </tr>
-      </tbody>
-    </table>
+    <div v-else-if="error" class="error">
+      <p>{{ error }}</p>
+    </div>
 
-    <nav v-if="totalPages > 1" class="pagination justify-content-center mt-4">
-      <button
-          class="btn btn-outline-primary me-2"
-          @click="prevPage"
-          :disabled="currentPage === 1"
-      >
-        上一页
-      </button>
+    <div v-else class="main-content" style="display: flex; gap: 20px;">
+      <!-- 左侧列表 -->
+      <div class="left-panel" style="flex: 1;">
+        <div class="search-bar">
+          <input
+              type="text"
+              class="form-control"
+              v-model="searchQuery1"
+              placeholder="搜索样本名..."
+          />
+        </div>
 
-      <span class="mx-2">第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
+        <table class="table">
+          <thead>
+          <tr>
+            <th>样本名</th>
+            <th>原始数据名</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+              v-for="detail in paginatedDetails1"
+              :key="detail.sample_name"
+              @click="handleLeftSelect(detail.sample_name)"
+              :class="{'selected-row': selectedSampleLeft === detail.sample_name}"
+          >
+            <td>{{ detail.sample_name }}</td>
+            <td>{{ detail.original_data_name }}</td>
+          </tr>
+          </tbody>
+        </table>
 
-      <button
-          class="btn btn-outline-primary ms-2"
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-      >
-        下一页
-      </button>
-    </nav>
+        <nav v-if="totalPages1 > 1" class="pagination">
+          <button class="btn btn-outline-primary" @click="prevPage1" :disabled="currentPage1 === 1">
+            上一页
+          </button>
+          <span>第 {{ currentPage1 }} 页，共 {{ totalPages1 }} 页</span>
+          <button class="btn btn-outline-primary" @click="nextPage1" :disabled="currentPage1 === totalPages1">
+            下一页
+          </button>
+        </nav>
+      </div>
+
+      <div class="selected-display-below">
+      <h3>目标样本</h3>
+      <p>{{ selectedSampleLeft || '未选择' }}</p>
+
+        <h3>对比样本</h3>
+        <p>{{ selectedSampleRight || '未选择' }}</p>
+        <button class="bot" @click="toCom">对比</button>
+      </div>
+      <!-- 右侧列表 -->
+      <div class="right-panel" style="flex: 1;">
+        <div class="search-bar">
+          <input
+              type="text"
+              class="form-control"
+              v-model="searchQuery2"
+              placeholder="搜索样本名..."
+          />
+        </div>
+
+        <table class="table">
+          <thead>
+          <tr>
+            <th>样本名</th>
+            <th>原始数据名</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+              v-for="detail in paginatedDetails2"
+              :key="detail.sample_name"
+              @click="handleRightSelect(detail.sample_name)"
+              :class="{'selected-row': selectedSampleRight === detail.sample_name}"
+          >
+            <td>{{ detail.sample_name }}</td>
+            <td>{{ detail.original_data_name }}</td>
+          </tr>
+          </tbody>
+        </table>
+
+        <nav v-if="totalPages2 > 1" class="pagination">
+          <button class="btn btn-outline-primary" @click="prevPage2" :disabled="currentPage2 === 1">
+            上一页
+          </button>
+          <span>第 {{ currentPage2 }} 页，共 {{ totalPages2 }} 页</span>
+          <button class="btn btn-outline-primary" @click="nextPage2" :disabled="currentPage2 === totalPages2">
+            下一页
+          </button>
+        </nav>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import {ref, computed, onMounted} from 'vue';
-import router from "@/router";
-import axios from "axios";
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
+import {useRouter} from "vue-router";
 
-// const sampleData = ref([
-//   { targetSample: 'MT-Target001', compareSample: 'MT-Target001', step: 0 },
-//   { targetSample: 'MT-Target001', compareSample: 'MT-Target002', step: 2 },
-//   { targetSample: 'MT-Target001', compareSample: 'MT-Target003', step: 4 },
-//   { targetSample: 'MT-Target001', compareSample: 'MT-Target004', step: 1 },
-//   { targetSample: 'MT-Target001', compareSample: 'MT-Target005', step: 8 },
-//   { targetSample: 'MT-Target001', compareSample: 'MT-Target005', step: 8 },
-// ]);
+// 全局数据
+const details = ref([])
+const loading = ref(true)
+const error = ref(null)
 
-const sampleData = ref([])
-const searchValue = ref('');
-const currentPage = ref(1);
-const itemsPerPage = ref(5);
+// 左侧表格相关变量
+const searchQuery1 = ref('')
+const currentPage1 = ref(1)
+const itemsPerPage1 = 5
+const selectedSampleLeft = ref(null)
 
-const getAllCom = async () => {
-  const response = await axios.get('/comparison/getAllCom')
-  sampleData.value = response.data.data
+// 右侧表格相关变量
+const searchQuery2 = ref('')
+const currentPage2 = ref(1)
+const itemsPerPage2 = 5
+const selectedSampleRight = ref(null)
+
+
+const router = useRouter()
+
+// 获取数据
+const fetchData = async () => {
+  try {
+    const response = await axios.get('/table/getMitochondrialDetailAll')
+    details.value = response.data.data
+    loading.value = false
+  } catch (err) {
+    loading.value = false
+    error.value = '获取数据失败: ' + (err.response?.data?.message || err.message)
+  }
 }
 
-// 计算总页数
-const totalPages = computed(() => {
-  const filteredCount = sampleData.value.filter(item =>
-      Object.values(item).some(val => String(val).includes(searchValue.value))
-  ).length;
-  return Math.ceil(filteredCount / itemsPerPage.value);
-});
+const toCom = ()=>{
+  if (selectedSampleLeft.value!==null&&selectedSampleRight.value!==null){
+    router.push({ path: `/twoComComponent`, query: { sampleName1: selectedSampleLeft.value,sampleName2:selectedSampleRight.value } })
+  }else {
+    alert("请将数据选择完善！")
+  }
+}
 
-// 过滤后的数据（带分页）
-const filterData = computed(() => {
-  const filtered = sampleData.value.filter(item =>
-      Object.values(item).some(val => String(val).includes(searchValue.value))
-  );
-  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
-  return filtered.slice(startIndex, startIndex + itemsPerPage.value);
-});
+// 选择处理函数
+const handleLeftSelect = (sampleName) => {
+  selectedSampleLeft.value = sampleName
+}
 
-// 分页操作
-const prevPage = () => currentPage.value--;
-const nextPage = () => currentPage.value++;
+const handleRightSelect = (sampleName) => {
+  selectedSampleRight.value = sampleName
+}
 
-const handleViewDetail = (sample1,sample2) => {
-  console.log(sample1,sample2)
-  router.push({ path: `/twoComComponent`, query: { sampleName1: sample1,sampleName2:sample2 } })
-};
-onMounted(()=>{
-  getAllCom()
+// 左侧表格计算属性
+const filteredDetails1 = computed(() => {
+  return details.value.filter(detail => {
+    return detail.sample_name.includes(searchQuery1.value)
+  })
 })
+
+const paginatedDetails1 = computed(() => {
+  const start = (currentPage1.value - 1) * itemsPerPage1
+  const end = start + itemsPerPage1
+  return filteredDetails1.value.slice(start, end)
+})
+
+const totalPages1 = computed(() => {
+  return Math.ceil(filteredDetails1.value.length / itemsPerPage1)
+})
+
+// 右侧表格计算属性
+const filteredDetails2 = computed(() => {
+  return details.value.filter(detail => {
+    return detail.sample_name.includes(searchQuery2.value)
+  })
+})
+
+const paginatedDetails2 = computed(() => {
+  const start = (currentPage2.value - 1) * itemsPerPage2
+  const end = start + itemsPerPage2
+  return filteredDetails2.value.slice(start, end)
+})
+
+const totalPages2 = computed(() => {
+  return Math.ceil(filteredDetails2.value.length / itemsPerPage2)
+})
+
+// 分页控制函数
+const prevPage1 = () => {
+  if (currentPage1.value > 1) currentPage1.value--
+}
+
+const nextPage1 = () => {
+  if (currentPage1.value < totalPages1.value) currentPage1.value++
+}
+
+const prevPage2 = () => {
+  if (currentPage2.value > 1) currentPage2.value--
+}
+
+const nextPage2 = () => {
+  if (currentPage2.value < totalPages2.value) currentPage2.value++
+}
+
+// 初始加载
+onMounted(fetchData)
 </script>
 
-<style scoped>
-.database-compare-container {
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
   padding: 20px;
-  width: 100%;
+  background-color: #f5f5f5;
 }
 
-.search-container {
+.container {
+  padding: 20px;
+  border-radius: 8px;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.loading, .error {
+  padding: 20px;
+  text-align: center;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+}
+
+
+.search-bar {
   margin-bottom: 20px;
 }
 
 .form-control {
-  width: 98%;
-  padding: 10px;
+  width: 95%;
+  padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.compare-table {
+
+.table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
-.compare-table th,
-.compare-table td {
-  border: 1px solid #e9e9e9;
-  padding: 12px;
+.table th,
+.table td {
+  padding: 12px 15px;
   text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-.compare-table th {
-  background-color: #f5f7fa;
+.table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
 }
 
-.clickable-sample {
-  color: #409eff;
+.table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 4px;
   cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
 }
 
-/* 新增分页样式 */
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  align-items: center;
 }
 
 .pagination button {
-  padding: 6px 12px;
+  margin: 0 5px;
+  padding: 5px 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
   background-color: white;
-  transition: all 0.3s ease;
-}
-
-.pagination button:hover {
-  background-color: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .pagination button:disabled {
@@ -173,13 +321,20 @@ onMounted(()=>{
   cursor: not-allowed;
 }
 
-.btn-outline-primary {
-  color: #007bff;
-  border-color: #007bff;
+.pagination span {
+  margin: 0 10px;
 }
 
-.btn-outline-primary:hover {
+.selected-display-below{
+  width: 200px;
+}
+
+.bot{
+  padding: 8px 16px;
+  background-color: #182383;
   color: white;
-  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>
