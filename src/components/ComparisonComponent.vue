@@ -26,7 +26,7 @@
           <table class="table">
             <thead>
             <tr>
-              <th>样本名</th>
+              <th>目标样本名</th>
               <th>原始数据名</th>
             </tr>
             </thead>
@@ -56,10 +56,10 @@
       </div>
 
       <div class="selected-display-below">
-        <h3>目标样本</h3>
+        <h4>目标样本</h4>
         <p>{{ selectedSampleLeft || '未选择' }}</p>
 
-        <h3>对比样本</h3>
+        <h4>对比样本</h4>
         <p>{{ selectedSampleRight || '未选择' }}</p>
         <button class="bot" @click="toCom">对比</button>
       </div>
@@ -78,7 +78,7 @@
           <table class="table">
             <thead>
             <tr>
-              <th>样本名</th>
+              <th>对比样本名</th>
               <th>原始数据名</th>
             </tr>
             </thead>
