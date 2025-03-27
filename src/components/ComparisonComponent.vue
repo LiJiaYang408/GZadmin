@@ -12,7 +12,7 @@
 
     <div v-else class="main-content" style="display: flex; gap: 20px;">
       <!-- 左侧列表 -->
-      <div class="left-panel" style="flex: 1;">
+      <div class="left-panel" style="flex: 1;width: 500px">
         <div class="search-bar">
           <input
               type="text"
@@ -21,26 +21,28 @@
               placeholder="搜索样本名..."
           />
         </div>
-
-        <table class="table">
-          <thead>
-          <tr>
-            <th>样本名</th>
-            <th>原始数据名</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
-              v-for="detail in paginatedDetails1"
-              :key="detail.sample_name"
-              @click="handleLeftSelect(detail.sample_name)"
-              :class="{'selected-row': selectedSampleLeft === detail.sample_name}"
-          >
-            <td>{{ detail.sample_name }}</td>
-            <td>{{ detail.original_data_name }}</td>
-          </tr>
-          </tbody>
-        </table>
+        <!-- 设置固定高度并添加滚动条 -->
+        <div class="table-container" style="height: 300px; overflow-y: auto;">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>样本名</th>
+              <th>原始数据名</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+                v-for="detail in paginatedDetails1"
+                :key="detail.sample_name"
+                @click="handleLeftSelect(detail.sample_name)"
+                :class="{'selected-row': selectedSampleLeft === detail.sample_name}"
+            >
+              <td>{{ detail.sample_name }}</td>
+              <td>{{ detail.original_data_name }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
 
         <nav v-if="totalPages1 > 1" class="pagination">
           <button class="btn btn-outline-primary" @click="prevPage1" :disabled="currentPage1 === 1">
@@ -54,15 +56,15 @@
       </div>
 
       <div class="selected-display-below">
-      <h3>目标样本</h3>
-      <p>{{ selectedSampleLeft || '未选择' }}</p>
+        <h3>目标样本</h3>
+        <p>{{ selectedSampleLeft || '未选择' }}</p>
 
         <h3>对比样本</h3>
         <p>{{ selectedSampleRight || '未选择' }}</p>
         <button class="bot" @click="toCom">对比</button>
       </div>
       <!-- 右侧列表 -->
-      <div class="right-panel" style="flex: 1;">
+      <div class="right-panel" style="flex: 1;width: 500px">
         <div class="search-bar">
           <input
               type="text"
@@ -71,26 +73,28 @@
               placeholder="搜索样本名..."
           />
         </div>
-
-        <table class="table">
-          <thead>
-          <tr>
-            <th>样本名</th>
-            <th>原始数据名</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr
-              v-for="detail in paginatedDetails2"
-              :key="detail.sample_name"
-              @click="handleRightSelect(detail.sample_name)"
-              :class="{'selected-row': selectedSampleRight === detail.sample_name}"
-          >
-            <td>{{ detail.sample_name }}</td>
-            <td>{{ detail.original_data_name }}</td>
-          </tr>
-          </tbody>
-        </table>
+        <!-- 设置固定高度并添加滚动条 -->
+        <div class="table-container" style="height: 300px; overflow-y: auto;">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>样本名</th>
+              <th>原始数据名</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr
+                v-for="detail in paginatedDetails2"
+                :key="detail.sample_name"
+                @click="handleRightSelect(detail.sample_name)"
+                :class="{'selected-row': selectedSampleRight === detail.sample_name}"
+            >
+              <td>{{ detail.sample_name }}</td>
+              <td>{{ detail.original_data_name }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
 
         <nav v-if="totalPages2 > 1" class="pagination">
           <button class="btn btn-outline-primary" @click="prevPage2" :disabled="currentPage2 === 1">
@@ -109,7 +113,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
-import {useRouter} from "vue-router";
+import { useRouter } from 'vue-router'
 
 // 全局数据
 const details = ref([])
@@ -128,7 +132,6 @@ const currentPage2 = ref(1)
 const itemsPerPage2 = 5
 const selectedSampleRight = ref(null)
 
-
 const router = useRouter()
 
 // 获取数据
@@ -143,10 +146,10 @@ const fetchData = async () => {
   }
 }
 
-const toCom = ()=>{
-  if (selectedSampleLeft.value!==null&&selectedSampleRight.value!==null){
-    router.push({ path: `/twoComComponent`, query: { sampleName1: selectedSampleLeft.value,sampleName2:selectedSampleRight.value } })
-  }else {
+const toCom = () => {
+  if (selectedSampleLeft.value!== null && selectedSampleRight.value!== null) {
+    router.push({ path: `/twoComComponent`, query: { sampleName1: selectedSampleLeft.value, sampleName2: selectedSampleRight.value } })
+  } else {
     alert("请将数据选择完善！")
   }
 }
@@ -233,7 +236,8 @@ h1 {
   margin-bottom: 20px;
 }
 
-.loading, .error {
+.loading,
+.error {
   padding: 20px;
   text-align: center;
 }
@@ -247,7 +251,6 @@ h1 {
   gap: 20px;
 }
 
-
 .search-bar {
   margin-bottom: 20px;
 }
@@ -258,7 +261,6 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
-
 
 .table {
   width: 100%;
@@ -325,16 +327,21 @@ h1 {
   margin: 0 10px;
 }
 
-.selected-display-below{
+.selected-display-below {
   width: 200px;
 }
 
-.bot{
+.bot {
   padding: 8px 16px;
   background-color: #182383;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.table-container {
+  height: 300px;
+  overflow-y: auto;
 }
 </style>
