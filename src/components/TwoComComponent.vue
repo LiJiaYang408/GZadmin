@@ -4,7 +4,8 @@
       <button @click="goBack">← 返回</button>
     </div>
     <div class="chart-container">
-      <h2>目标样本名：{{route.query.sampleName1}}</h2>
+      <h2>目标样本名</h2>
+      <h2>{{route.query.sampleName1}}</h2>
       <PieChart :tableData="tableData1"/>
     </div>
 
@@ -16,25 +17,26 @@
       <table>
         <thead>
         <tr>
+          <th>碱基位置</th>
+          <th>参考碱基</th>
           <th>目标样本</th>
           <th>对比样本</th>
-          <th>参考碱基</th>
-          <th>位点</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(item, index) in compareResult" :key="index">
+          <td>{{ item.position }}</td>
+          <td>{{ item.standard }}</td>
           <td>{{ item.target }}</td>
           <td>{{ item.db }}</td>
-          <td>{{ item.standard }}</td>
-          <td>{{ item.position }}</td>
         </tr>
         </tbody>
       </table>
     </div>
 
     <div class="chart-container">
-      <h2>对比样本名：{{route.query.sampleName2}}</h2>
+      <h2>对比样本名</h2>
+      <h2>{{route.query.sampleName2}}</h2>
       <PieChart :tableData="tableData2"/>
     </div>
   </div>
@@ -104,7 +106,7 @@ button {
 .list-container {
   flex: 1;
   overflow-y: auto;
-  height: 400px;
+  height: 500px;
 }
 
 table {

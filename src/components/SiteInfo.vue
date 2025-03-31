@@ -32,7 +32,7 @@
       </tr>
       </tbody>
     </table>
-    <nav v-if="totalPages > 1" class="pagination">
+    <nav  class="pagination">
       <button class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">
         上一页
       </button>
@@ -93,24 +93,17 @@ const nextPage = () => {
 // 计算属性
 const filteredSites = computed(() => {
   return sites.value
-      .filter(site => site.sample_name === sampleName)
+      .filter(site => site.original_data_name === sampleName)
       .filter(site => {
         const query = searchQuery.value.toLowerCase()
-        return (
-            site.base_position.toString().toLowerCase().includes(query) ||
-            site.reference_base.toLowerCase().includes(query) ||
-            site.mutant_base.toLowerCase().includes(query) ||
-            site.total_depth.toString().toLowerCase().includes(query) ||
-            site.heterogeneity.toString().toLowerCase().includes(query) ||
-            site.type.toLowerCase().includes(query)
-        )
+        return site.base_position.toString().toLowerCase().includes(query)
       })
       .slice((currentPage.value - 1) * itemsPerPage, currentPage.value * itemsPerPage)
 })
 
 const totalPages = computed(() => {
   return Math.ceil(
-      sites.value.filter(site => site.sample_name === sampleName).length / itemsPerPage
+      sites.value.filter(site => site.original_data_name === sampleName).length / itemsPerPage
   )
 })
 </script>

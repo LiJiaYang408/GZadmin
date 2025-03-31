@@ -7,7 +7,10 @@
     display: flex;
     flex: 1;
 }
-
+body {
+    margin: 0;
+    padding: 0;
+}
 .table-section {
     flex: 2;
     background-color: white;
@@ -24,7 +27,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 768px) {
     .content-wrapper {
         flex-direction: column;
     }

@@ -117,107 +117,16 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-container {
-  display: flex;
-  height: 100vh;
-  background-color: #f0f2f5;
-}
-
-.login-form {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  background-color: white;
-}
-
-.logo-container {
-  margin-bottom: 30px;
-}
-
-.logo {
-  width: 200px;
-}
-
-.title {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: #1a73e8;
-}
-
-.subtitle {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 30px;
-}
-
-.form {
-  width: 300px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-control {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.error-message {
-  color: #dc3545;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.btn-login {
-  width: 100%;
-  padding: 12px;
-  background-color: #1a73e8;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.btn-login:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
-.footer {
-  margin-top: 30px;
-  text-align: center;
-  color: #666;
-  font-size: 12px;
-}
-
-.login-background {
-  flex: 1;
-  background-size: cover;
-  background-position: center;
-}
-
-.background-img {
-  width: 100%;
+/* 全局样式，去除默认的内外边距 */
+html, body {
+  margin: 0;
+  padding: 0;
   height: 100%;
-  object-fit: cover;
 }
-</style>
-
-<style scoped>
 
 .login-container {
   display: flex;
-  height: 98vh;
-  width: 1885px;
-  margin-top: -80px;
+  height: 100vh; /* 使用视口高度 */
 }
 
 .login-form {
@@ -262,8 +171,6 @@ const handleLogin = async () => {
   color: #333;
   margin-bottom: 10px;
 }
-
-
 
 .subtitle {
   font-size: 16px;
@@ -327,9 +234,5 @@ const handleLogin = async () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-
-
-
-
 }
 </style>

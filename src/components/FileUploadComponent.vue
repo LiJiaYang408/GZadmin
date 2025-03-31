@@ -6,13 +6,19 @@
          @dragover="handleDragOver"
          @dragleave="handleDragLeave"
          @drop="handleDrop">
-      <input type="file" ref="fileInput" @change="handleFileChange" accept="*">
-      <div v-if="!file" class="upload-placeholder">
+      <!-- 添加 multiple 属性以支持多选 -->
+      <input type="file" ref="fileInput" @change="handleFileChange" accept="*" multiple>
+      <div v-if="!files.length" class="upload-placeholder">
         <i class="icon-upload"></i>
         <p>拖拽或 点击上传</p>
-        <span>只选一份文件 默认与数据库数据比对</span>
+        <span>可选择多份文件 默认与数据库数据比对</span>
       </div>
-      <div v-if="file" class="file-info">{{ file.name }}</div>
+      <div v-if="files.length" class="file-info">
+        <ul>
+          <!-- 循环显示选择的文件名 -->
+          <li v-for="file in files" :key="file.name">{{ file.name }}</li>
+        </ul>
+      </div>
     </div>
     <div class="upload-options">
       <label>
@@ -30,13 +36,15 @@
 import { ref } from 'vue';
 import axios from 'axios';
 
-const file = ref(null);
+// 使用数组存储多个文件
+const files = ref([]);
 const uploadType = ref('whole');
 const fileInput = ref(null);
 
 // 文件选择处理
 const handleFileChange = (e) => {
-  file.value = e.target.files[0];
+  // 将选择的文件转换为数组
+  files.value = Array.from(e.target.files);
 };
 
 // 拖拽事件处理
@@ -55,27 +63,24 @@ const handleDragLeave = (e) => {
 const handleDrop = (e) => {
   e.preventDefault();
   e.stopPropagation();
-  file.value = e.dataTransfer.files[0];
+  // 将拖拽的文件转换为数组
+  files.value = Array.from(e.dataTransfer.files);
 };
 
 // 上传处理
 const handleUpload = async () => {
-  if (!file.value) {
+  if (!files.value.length) {
     alert('请选择文件');
     return;
   }
 
   const formData = new FormData();
-  formData.append('file', file.value);
+
+  files.value.forEach((file) => {
+    formData.append('file', file);
+  });
   formData.append('uploadType', uploadType.value);
 
-  if (uploadType.value === 'segment') {
-    const inputValue = prompt('请输入样本名');
-    if (inputValue === null) {
-      return;
-    }
-    formData.append('inputValue', inputValue);
-  }
 
   try {
     const response = await axios.post('/api/upload', formData, {
@@ -95,6 +100,7 @@ const handleUpload = async () => {
   }
 };
 </script>
+
 <style scoped>
 .upload-container {
   width: 100%; /* 容器占满父级宽度 */

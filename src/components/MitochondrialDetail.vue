@@ -31,13 +31,13 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="detail in paginatedDetails" :key="detail.sample_name" @click="getData(detail.sample_name)">
+          <tr v-for="detail in paginatedDetails" :key="detail.sample_name" @click="getData(detail.original_data_name)">
             <td>{{ detail.sample_name }}</td>
             <td>{{ formatDate(detail.analysis_date) }}</td>
             <td>{{ detail.original_data_name }}</td>
             <td>
-              <button class="btn btn-primary" @click="goToSiteInfo(detail.sample_name)">
-                查看位点信息
+              <button class="btn btn-primary-Mit" @click="goToSiteInfo(detail.original_data_name)">
+                查看信息
               </button>
             </td>
           </tr>
@@ -143,13 +143,6 @@ const totalPages = computed(() => {
 </script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #f5f5f5;
-}
-
 .container {
   padding: 20px;
   border-radius: 8px;
@@ -217,8 +210,8 @@ h1 {
   text-decoration: none;
 }
 
-.btn-primary {
-  background-color: #007bff;
+.btn-primary-Mit {
+  background-color: #303da1;
   color: white;
   border: none;
 }

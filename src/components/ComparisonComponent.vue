@@ -33,9 +33,9 @@
             <tbody>
             <tr
                 v-for="detail in paginatedDetails1"
-                :key="detail.sample_name"
-                @click="handleLeftSelect(detail.sample_name)"
-                :class="{'selected-row': selectedSampleLeft === detail.sample_name}"
+                :key="detail.original_data_name"
+                @click="handleLeftSelect(detail.original_data_name)"
+                :class="{'selected-row': selectedSampleLeft === detail.original_data_name}"
             >
               <td>{{ detail.sample_name }}</td>
               <td>{{ detail.original_data_name }}</td>
@@ -44,7 +44,7 @@
           </table>
         </div>
 
-        <nav v-if="totalPages1 > 1" class="pagination">
+        <nav  class="pagination">
           <button class="btn btn-outline-primary" @click="prevPage1" :disabled="currentPage1 === 1">
             上一页
           </button>
@@ -55,14 +55,7 @@
         </nav>
       </div>
 
-      <div class="selected-display-below">
-        <h4>目标样本</h4>
-        <p>{{ selectedSampleLeft || '未选择' }}</p>
 
-        <h4>对比样本</h4>
-        <p>{{ selectedSampleRight || '未选择' }}</p>
-        <button class="bot" @click="toCom">对比</button>
-      </div>
       <!-- 右侧列表 -->
       <div class="right-panel" style="flex: 1;width: 500px">
         <div class="search-bar">
@@ -85,9 +78,9 @@
             <tbody>
             <tr
                 v-for="detail in paginatedDetails2"
-                :key="detail.sample_name"
-                @click="handleRightSelect(detail.sample_name)"
-                :class="{'selected-row': selectedSampleRight === detail.sample_name}"
+                :key="detail.original_data_name"
+                @click="handleRightSelect(detail.original_data_name)"
+                :class="{'selected-row': selectedSampleRight === detail.original_data_name}"
             >
               <td>{{ detail.sample_name }}</td>
               <td>{{ detail.original_data_name }}</td>
@@ -96,7 +89,7 @@
           </table>
         </div>
 
-        <nav v-if="totalPages2 > 1" class="pagination">
+        <nav  class="pagination">
           <button class="btn btn-outline-primary" @click="prevPage2" :disabled="currentPage2 === 1">
             上一页
           </button>
@@ -104,7 +97,16 @@
           <button class="btn btn-outline-primary" @click="nextPage2" :disabled="currentPage2 === totalPages2">
             下一页
           </button>
+
         </nav>
+      </div>
+      <div class="selected-display-below">
+        <h4>目标样本</h4>
+        <p @click="handleCancelLeftSelect" :class="{'clickable': selectedSampleLeft}">{{ selectedSampleLeft || '未选择' }}</p>
+
+        <h4>对比样本</h4>
+        <p @click="handleCancelRightSelect" :class="{'clickable': selectedSampleRight}">{{ selectedSampleRight || '未选择' }}</p>
+        <button class="bot" @click="toCom">对比</button>
       </div>
     </div>
   </div>
@@ -156,17 +158,36 @@ const toCom = () => {
 
 // 选择处理函数
 const handleLeftSelect = (sampleName) => {
-  selectedSampleLeft.value = sampleName
+  // 如果当前点击的样本名已经被选中，则取消选择
+  if (selectedSampleLeft.value === sampleName) {
+    selectedSampleLeft.value = null
+  } else {
+    selectedSampleLeft.value = sampleName
+  }
 }
 
 const handleRightSelect = (sampleName) => {
-  selectedSampleRight.value = sampleName
+  // 如果当前点击的样本名已经被选中，则取消选择
+  if (selectedSampleRight.value === sampleName) {
+    selectedSampleRight.value = null
+  } else {
+    selectedSampleRight.value = sampleName
+  }
+}
+
+
+const handleCancelLeftSelect = () => {
+  selectedSampleLeft.value = null
+}
+
+const handleCancelRightSelect = () => {
+  selectedSampleRight.value = null
 }
 
 // 左侧表格计算属性
 const filteredDetails1 = computed(() => {
   return details.value.filter(detail => {
-    return detail.sample_name.includes(searchQuery1.value)
+    return detail.original_data_name.includes(searchQuery1.value) && detail.original_data_name!== selectedSampleRight.value
   })
 })
 
@@ -183,7 +204,7 @@ const totalPages1 = computed(() => {
 // 右侧表格计算属性
 const filteredDetails2 = computed(() => {
   return details.value.filter(detail => {
-    return detail.sample_name.includes(searchQuery2.value)
+    return detail.original_data_name.includes(searchQuery2.value) && detail.original_data_name!== selectedSampleLeft.value
   })
 })
 
@@ -219,13 +240,6 @@ onMounted(fetchData)
 </script>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #f5f5f5;
-}
-
 .container {
   padding: 20px;
   border-radius: 8px;
@@ -333,7 +347,7 @@ h1 {
 
 .bot {
   padding: 8px 16px;
-  background-color: #182383;
+  background-color: #303da1;
   color: white;
   border: none;
   border-radius: 4px;
@@ -343,5 +357,9 @@ h1 {
 .table-container {
   height: 300px;
   overflow-y: auto;
+}
+
+.clickable {
+  cursor: pointer;
 }
 </style>

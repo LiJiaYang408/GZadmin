@@ -22,10 +22,11 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 nav {
@@ -33,7 +34,6 @@ nav {
 }
 
 nav a {
-  margin: 0 10px;
   text-decoration: none;
   color: #2c3e50;
 }

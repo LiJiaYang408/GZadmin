@@ -59,9 +59,6 @@ export default {
 </script>
 
 <style scoped>
-.app-header{
-  margin-top: -70px;
-}
 
 .app-container {
   display: flex;

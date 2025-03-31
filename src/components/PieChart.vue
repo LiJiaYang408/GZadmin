@@ -109,7 +109,7 @@ const updateChart = () => {
     const color = item.type !== 'SNP' ? 'yellow' : colorMap[item.reference_base];
     return {
       name: `${item.base_position}${item.reference_base}`,
-      value: 1,
+      value: 100, // 这里假设每个数据点权重为1，如果有实际值可以替换
       base_position: parseInt(item.base_position),
       itemStyle: {
         color: color
@@ -119,39 +119,54 @@ const updateChart = () => {
 
   const totalPositions = 16569;
   const dataCount = data.length;
-  const emptyValue = (totalPositions * 0.8) / (0.2) * dataCount / totalPositions;
-
-  const emptyData = {
-    name: '无数据',
-    itemStyle: {
-      color: 'rgba(0, 0, 0, 0.1)'
-    }
-  };
 
   const finalData = [];
 
   if (dataCount === 0) {
-    finalData.push({ ...emptyData, value: emptyValue });
+    finalData.push({
+      name: '无数据',
+      value: totalPositions,
+      itemStyle: {
+        color: 'rgba(0, 0, 0, 0.1)'
+      }
+    });
   } else {
-    const firstEmptyValue = data[0].base_position > 1 ? (data[0].base_position - 1) / totalPositions * emptyValue : 0;
+    const firstEmptyValue = data[0].base_position > 1 ? data[0].base_position - 1 : 0;
     if (firstEmptyValue > 0) {
-      finalData.push({ ...emptyData, value: firstEmptyValue });
+      finalData.push({
+        name: '无数据',
+        value: firstEmptyValue,
+        itemStyle: {
+          color: 'rgba(0, 0, 0, 0.1)'
+        }
+      });
     }
 
     for (let i = 0; i < dataCount; i++) {
       finalData.push(data[i]);
       if (i < dataCount - 1) {
         const gap = data[i + 1].base_position - data[i].base_position - 1;
-        const gapEmptyValue = gap / totalPositions * emptyValue;
-        if (gapEmptyValue > 0) {
-          finalData.push({ ...emptyData, value: gapEmptyValue });
+        if (gap > 0) {
+          finalData.push({
+            name: '无数据',
+            value: gap,
+            itemStyle: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          });
         }
       }
     }
 
-    const lastEmptyValue = totalPositions - data[dataCount - 1].base_position > 0 ? (totalPositions - data[dataCount - 1].base_position) / totalPositions * emptyValue : 0;
+    const lastEmptyValue = totalPositions - data[dataCount - 1].base_position > 0 ? totalPositions - data[dataCount - 1].base_position : 0;
     if (lastEmptyValue > 0) {
-      finalData.push({ ...emptyData, value: lastEmptyValue });
+      finalData.push({
+        name: '无数据',
+        value: lastEmptyValue,
+        itemStyle: {
+          color: 'rgba(0, 0, 0, 0.1)'
+        }
+      });
     }
   }
 
