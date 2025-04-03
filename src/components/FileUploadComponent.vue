@@ -11,7 +11,7 @@
       <div v-if="!files.length" class="upload-placeholder">
         <i class="icon-upload"></i>
         <p>拖拽或 点击上传</p>
-        <span>可选择多份文件 默认与数据库数据比对</span>
+        <span>可选择多份文件</span>
       </div>
       <div v-if="files.length" class="file-info">
         <ul>

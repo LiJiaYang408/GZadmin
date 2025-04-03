@@ -12,12 +12,6 @@
       <!-- 侧边栏 -->
       <aside className="sidebar">
         <ul className="nav-menu">
-          <router-link to="/chart">
-            <li>
-              <img src="@/assets/chart.png" class="el-aside-img">
-              <span>图表数据</span>
-            </li>
-          </router-link>
           <router-link to="/mitochondrialDetail">
             <li>
               <img src="@/assets/tabulation.png" class="el-aside-img">
@@ -33,7 +27,19 @@
           <router-link to="/comparison">
             <li>
               <img src="@/assets/comparison.png" class="el-aside-img">
-              <span>数据比对</span>
+              <span>数据比对（1/1）</span>
+            </li>
+          </router-link>
+          <router-link to="/oneComN">
+            <li>
+              <img src="@/assets/one-to-many.png" class="el-aside-img">
+              <span>数据比对（1/n）</span>
+            </li>
+          </router-link>
+          <router-link to="/recordsComponent">
+            <li>
+              <img src="@/assets/record.png" class="el-aside-img">
+              <span>比对记录</span>
             </li>
           </router-link>
         </ul>
@@ -53,7 +59,7 @@ import router from "@/router";
 export default {
   name: 'IndexView',
   mounted() {
-    router.push("/chart")
+    router.push("/mitochondrialDetail")
   }
 };
 </script>

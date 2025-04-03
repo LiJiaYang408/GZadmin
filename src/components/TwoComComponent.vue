@@ -5,8 +5,8 @@
     </div>
     <div class="chart-container">
       <h2>目标样本名</h2>
-      <h2>{{route.query.sampleName1}}</h2>
-      <PieChart :tableData="tableData1"/>
+      <h2>{{ route.query.selectedLeft }}</h2>
+      <PieChart :tableData="tableData1" />
     </div>
 
     <div class="list-container">
@@ -36,17 +36,17 @@
 
     <div class="chart-container">
       <h2>对比样本名</h2>
-      <h2>{{route.query.sampleName2}}</h2>
-      <PieChart :tableData="tableData2"/>
+      <h2>{{ route.query.selectedRight }}</h2>
+      <PieChart :tableData="tableData2" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import PieChart from "@/components/PieChart";
-import axios from "axios";
-import { useRoute, useRouter } from "vue-router";
+import PieChart from '@/components/PieChart';
+import axios from 'axios';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
@@ -56,13 +56,29 @@ const tableData2 = ref([]);
 const compareResult = ref([]);
 
 const fetchData = async () => {
-  const response1 = await axios.get('/table/getMitochondrialDetailDetails?name=' + route.query.sampleName1);
-  tableData1.value = response1.data.data;
-  const response2 = await axios.get('/table/getMitochondrialDetailDetails?name=' + route.query.sampleName2);
-  tableData2.value = response2.data.data;
-  // 从后端获取对比结果
-  const compareResponse = await axios.get(`/comparison/compare?sampleName1=${route.query.sampleName1}&sampleName2=${route.query.sampleName2}`);
-  compareResult.value = compareResponse.data;
+  try {
+    const response1 = await axios.get('/table/getMitochondrialDetailDetails?name=' + route.query.sampleName1);
+    tableData1.value = response1.data.data;
+    const response2 = await axios.get('/table/getMitochondrialDetailDetails?name=' + route.query.sampleName2);
+    tableData2.value = response2.data.data;
+
+    // 从后端获取对比结果
+    const compareResponse = await axios.get(
+        `/comparison/compare?sampleName1=${route.query.sampleName1}&sampleName2=${route.query.sampleName2}`
+    );
+    compareResult.value = compareResponse.data;
+  } catch (error) {
+    if (error.response) {
+      // 服务器返回错误状态码
+      alert(`请求失败，请检查网络连接或 Redis 是否开启，状态码：${error.response.status}，错误信息：${error.response.data.message}`);
+    } else if (error.request) {
+      // 请求已发送，但没有收到响应
+      alert('没有收到服务器响应，请检查网络连接或 Redis 是否开启。');
+    } else {
+      // 其他错误
+      alert(`发生未知错误：${error.message}`);
+    }
+  }
 };
 
 onMounted(() => {
@@ -114,7 +130,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #ccc;
   padding: 8px;
   text-align: left;

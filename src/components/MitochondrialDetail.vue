@@ -123,11 +123,7 @@ const nextPage = () => {
 // 计算属性
 const filteredDetails = computed(() => {
   return details.value.filter(detail => {
-    return (
-        detail.sample_name.includes(searchQuery.value) ||
-        formatDate(detail.analysis_date).includes(searchQuery.value) ||
-        detail.original_data_name.includes(searchQuery.value)
-    )
+    return detail.sample_name.includes(searchQuery.value);
   })
 })
 

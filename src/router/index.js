@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/LoginView.vue';
-import Chart from '../components/ChartComponent';
 import MitochondrialDetail from '../components/MitochondrialDetail';
 import SiteInfo from '../components/SiteInfo';
 import IndexView from "@/views/IndexView";
 import FileUpload from "@/components/FileUploadComponent"
 import Comparison from "@/components/ComparisonComponent"
 import TwoComComponent from "@/components/TwoComComponent";
+import oneComN from "@/components/OneComNComponent"
+import RecordsComponent from "@/components/RecordsComponent"
 
 const routes = [
     {
@@ -20,11 +21,6 @@ const routes = [
         name: 'Index',
         component: IndexView,
         children:[
-            {
-                path: '/chart',
-                name: 'Chart',
-                component: Chart,
-            },
             {
                 path: '/mitochondrialDetail',
                 name: 'MitochondrialDetail',
@@ -49,6 +45,16 @@ const routes = [
                 path: '/twoComComponent',
                 name: 'TwoComComponent',
                 component: TwoComComponent,
+            },
+            {
+                path: '/oneComN',
+                name: 'oneComN',
+                component: oneComN,
+            },
+            {
+                path: '/recordsComponent',
+                name: 'recordsComponent',
+                component: RecordsComponent,
             },
         ]
     }

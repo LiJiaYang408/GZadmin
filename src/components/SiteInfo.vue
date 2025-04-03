@@ -7,7 +7,7 @@
           type="text"
           class="form-control"
           v-model="searchQuery"
-          placeholder="搜索位点信息..."
+          placeholder="搜索碱基位置信息..."
       />
     </div>
     <table class="table">
@@ -33,11 +33,11 @@
       </tbody>
     </table>
     <nav  class="pagination">
-      <button class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">
+      <button v-if="totalPages > 1" class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">
         上一页
       </button>
-      <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
-      <button class="btn btn-outline-primary" @click="nextPage" :disabled="currentPage === totalPages">
+      <span v-if="totalPages > 1">第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
+      <button v-if="totalPages > 1" class="btn btn-outline-primary" @click="nextPage" :disabled="currentPage === totalPages">
         下一页
       </button>
       <button class="btn-back" @click="goBack">

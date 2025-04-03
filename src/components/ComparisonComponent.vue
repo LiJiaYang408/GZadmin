@@ -18,7 +18,7 @@
               type="text"
               class="form-control"
               v-model="searchQuery1"
-              placeholder="搜索样本名..."
+              placeholder="搜索原始数据名..."
           />
         </div>
         <!-- 设置固定高度并添加滚动条 -->
@@ -34,7 +34,7 @@
             <tr
                 v-for="detail in paginatedDetails1"
                 :key="detail.original_data_name"
-                @click="handleLeftSelect(detail.original_data_name)"
+                @click="handleLeftSelect(detail.original_data_name,detail.sample_name)"
                 :class="{'selected-row': selectedSampleLeft === detail.original_data_name}"
             >
               <td>{{ detail.sample_name }}</td>
@@ -63,7 +63,7 @@
               type="text"
               class="form-control"
               v-model="searchQuery2"
-              placeholder="搜索样本名..."
+              placeholder="搜索原始数据名..."
           />
         </div>
         <!-- 设置固定高度并添加滚动条 -->
@@ -79,7 +79,7 @@
             <tr
                 v-for="detail in paginatedDetails2"
                 :key="detail.original_data_name"
-                @click="handleRightSelect(detail.original_data_name)"
+                @click="handleRightSelect(detail.original_data_name,detail.sample_name)"
                 :class="{'selected-row': selectedSampleRight === detail.original_data_name}"
             >
               <td>{{ detail.sample_name }}</td>
@@ -102,10 +102,10 @@
       </div>
       <div class="selected-display-below">
         <h4>目标样本</h4>
-        <p @click="handleCancelLeftSelect" :class="{'clickable': selectedSampleLeft}">{{ selectedSampleLeft || '未选择' }}</p>
+        <p @click="handleCancelLeftSelect" :class="{'clickable': selectedLeft}">{{ selectedLeft || '未选择' }}</p>
 
         <h4>对比样本</h4>
-        <p @click="handleCancelRightSelect" :class="{'clickable': selectedSampleRight}">{{ selectedSampleRight || '未选择' }}</p>
+        <p @click="handleCancelRightSelect" :class="{'clickable': selectedRight}">{{ selectedRight || '未选择' }}</p>
         <button class="bot" @click="toCom">对比</button>
       </div>
     </div>
@@ -127,12 +127,14 @@ const searchQuery1 = ref('')
 const currentPage1 = ref(1)
 const itemsPerPage1 = 5
 const selectedSampleLeft = ref(null)
+const selectedLeft = ref(null)
 
 // 右侧表格相关变量
 const searchQuery2 = ref('')
 const currentPage2 = ref(1)
 const itemsPerPage2 = 5
 const selectedSampleRight = ref(null)
+const selectedRight = ref(null)
 
 const router = useRouter()
 
@@ -150,28 +152,32 @@ const fetchData = async () => {
 
 const toCom = () => {
   if (selectedSampleLeft.value!== null && selectedSampleRight.value!== null) {
-    router.push({ path: `/twoComComponent`, query: { sampleName1: selectedSampleLeft.value, sampleName2: selectedSampleRight.value } })
+    router.push({ path: `/twoComComponent`, query: { sampleName1: selectedSampleLeft.value, sampleName2: selectedSampleRight.value,selectedLeft:selectedLeft.value,selectedRight:selectedRight.value } })
   } else {
     alert("请将数据选择完善！")
   }
 }
 
 // 选择处理函数
-const handleLeftSelect = (sampleName) => {
+const handleLeftSelect = (sampleName,sampleName1) => {
   // 如果当前点击的样本名已经被选中，则取消选择
   if (selectedSampleLeft.value === sampleName) {
     selectedSampleLeft.value = null
+    selectedLeft.value = null
   } else {
     selectedSampleLeft.value = sampleName
+    selectedLeft.value = sampleName1
   }
 }
 
-const handleRightSelect = (sampleName) => {
+const handleRightSelect = (sampleName,sampleName1) => {
   // 如果当前点击的样本名已经被选中，则取消选择
   if (selectedSampleRight.value === sampleName) {
     selectedSampleRight.value = null
+    selectedRight.value = null
   } else {
     selectedSampleRight.value = sampleName
+    selectedRight.value = sampleName1
   }
 }
 
