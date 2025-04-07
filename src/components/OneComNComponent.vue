@@ -1,39 +1,43 @@
 <template>
   <div class="upload-container">
-    <div class="main-content">
-      <!-- 左侧上传区域 -->
-      <div class="left-panel">
-        <h3>上传文件比对</h3>
-        <div class="drag-upload"
-             @dragenter="handleDragEnter"
-             @dragover="handleDragOver"
-             @dragleave="handleDragLeave"
-             @drop="handleDrop">
-          <input type="file" ref="fileInput" @change="handleFileChange" accept="*">
-          <div v-if="!selectedFile" class="upload-placeholder">
-            <i class="icon-upload"></i>
-            <p>拖拽或点击上传数据库数据比对</p>
+      <div class="main-content">
+        <!-- 左侧上传区域 -->
+        <div class="OneLeft">
+          <h3>上传文件比对</h3>
+          <div class="drag-upload"
+               @dragenter="handleDragEnter"
+               @dragover="handleDragOver"
+               @dragleave="handleDragLeave"
+               @drop="handleDrop">
+            <input type="file" ref="fileInput" @change="handleFileChange" accept="*">
+            <div v-if="!selectedFile" class="upload-placeholder">
+              <i class="icon-upload"></i>
+              <p>拖拽或点击上传数据库数据比对</p>
+            </div>
+            <div v-if="selectedFile" class="file-info">
+              <p title="{{ selectedFile.name }}">{{ selectedFile.name }}</p>
+            </div>
           </div>
-          <div v-if="selectedFile" class="file-info">
-            <p title="{{ selectedFile.name }}">{{ selectedFile.name }}</p>
+          <div class="upload-options">
+            <label>
+              <input type="radio" v-model="uploadType" value="whole">Excel
+            </label>
+            <label>
+              <input type="radio" v-model="uploadType" value="segment">Vcf
+            </label>
+            <button class="confirm-btn" @click="handleUpload">确认上传</button>
           </div>
         </div>
-        <div class="upload-options">
-          <label>
-            <input type="radio" v-model="uploadType" value="whole">Excel
-          </label>
-          <label>
-            <input type="radio" v-model="uploadType" value="segment">Vcf
-          </label>
-          <button class="confirm-btn" @click="handleUpload">确认上传</button>
+
+        <!-- 右侧表格区域，使用 RecordList 组件 -->
+        <div class="OneRight">
+          <el-card style="height: 100%">
+          <RecordList
+              :details="details"
+          />
+          </el-card>
         </div>
       </div>
-
-      <!-- 右侧表格区域，使用 RecordList 组件 -->
-      <RecordList
-          :details="details"
-      />
-    </div>
   </div>
 </template>
 
@@ -115,7 +119,7 @@ onMounted(() => {
 .upload-container {
   width: 100%;
   max-width: 100%;
-  margin: 20px;
+  margin: 30px;
 }
 
 .main-content {
@@ -123,9 +127,6 @@ onMounted(() => {
   gap: 20px;
 }
 
-.left-panel {
-  width: 18%;
-}
 
 .drag-upload {
   border: 2px dashed #e0e0e0;
@@ -195,5 +196,13 @@ onMounted(() => {
 
 .confirm-btn:hover {
   background-color: #45a049;
+}
+
+.OneRight{
+  width: 30%;
+}
+
+.OneRight{
+  width: 70%;
 }
 </style>

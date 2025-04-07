@@ -1,8 +1,14 @@
 <template>
+
+  <div class="Rec-container">
+    <el-card class="card-h1">
+      <h1 >比对记录</h1>
       <RecordList
           :details="details"
-          :type="false"
-      />
+          :type="false"/>
+    </el-card>
+  </div>
+
 </template>
 
 <script setup>
@@ -24,5 +30,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.Rec-container{
+  padding-right: 40px;
+  margin: 0 auto;
+  width: 70%;
+}
 
+.card-h1{
+  margin-top: 30px;
+}
 </style>

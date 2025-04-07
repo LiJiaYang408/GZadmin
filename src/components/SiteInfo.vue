@@ -1,49 +1,52 @@
 <template>
   <div class="containerSiteInfo">
-    <h1>位点信息 - 样本: {{ sampleName }}</h1>
-
-    <div class="search-bar">
-      <input
-          type="text"
-          class="form-control"
+    <el-card class="custom-card">
+      <template #header>
+        <h1>位点信息 - 样本: {{ sampleName }}</h1>
+      </template>
+      <el-input
           v-model="searchQuery"
           placeholder="搜索碱基位置信息..."
+          class="search-bar"
       />
-    </div>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>碱基位置</th>
-        <th>参考碱基</th>
-        <th>突变碱基</th>
-        <th>总深度</th>
-        <th>异质性</th>
-        <th>类型</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="site in filteredSites" :key="site.id">
-        <td>{{ site.base_position }}</td>
-        <td>{{ site.reference_base }}</td>
-        <td>{{ site.mutant_base }}</td>
-        <td>{{ site.total_depth }}</td>
-        <td>{{ site.heterogeneity }}%</td>
-        <td>{{ site.type }}</td>
-      </tr>
-      </tbody>
-    </table>
-    <nav  class="pagination">
-      <button v-if="totalPages > 1" class="btn btn-outline-primary" @click="prevPage" :disabled="currentPage === 1">
-        上一页
-      </button>
-      <span v-if="totalPages > 1">第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
-      <button v-if="totalPages > 1" class="btn btn-outline-primary" @click="nextPage" :disabled="currentPage === totalPages">
-        下一页
-      </button>
-      <button class="btn-back" @click="goBack">
-        返回
-      </button>
-    </nav>
+      <el-table :data="filteredSites" stripe>
+        <el-table-column prop="base_position" label="碱基位置"></el-table-column>
+        <el-table-column prop="reference_base" label="参考碱基"></el-table-column>
+        <el-table-column prop="mutant_base" label="突变碱基"></el-table-column>
+        <el-table-column prop="total_depth" label="总深度"></el-table-column>
+        <el-table-column prop="heterogeneity" label="异质性">
+          <template #default="{ row }">
+            {{ row.heterogeneity }}%
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" label="类型"></el-table-column>
+      </el-table>
+      <div class="pagination-button-container">
+        <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[10, 20, 30, 40]"
+        :page-size="itemsPerPage"
+        :total="totalItems"
+        prev-text="上一页"
+        next-text="下一页"
+        >
+        <template #total>共 {{ totalItems }}条</template> <!-- 自定义 Total 显示 -->
+        <template #jumper>
+          前往
+          <el-input-number
+              v-model="currentPage"
+              :min="1"
+              :max="Math.ceil(totalItems / itemsPerPage)"
+              size="small"
+          />
+          页
+        </template>
+        </el-pagination>
+        <el-button @click="goBack">返回</el-button>
+      </div>
+    </el-card>
   </div>
 </template>
 
@@ -61,7 +64,7 @@ const sampleName = route.query.sampleName
 const sites = ref([])
 const searchQuery = ref('')
 const currentPage = ref(1)
-const itemsPerPage = 10
+const itemsPerPage = ref(10) // 初始每页数量
 
 // 生命周期
 onMounted(() => {
@@ -82,12 +85,12 @@ const goBack = () => {
   router.go(-1)
 }
 
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--
+const handleSizeChange = (newSize) => {
+  itemsPerPage.value = newSize
 }
 
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++
+const handleCurrentChange = (newPage) => {
+  currentPage.value = newPage
 }
 
 // 计算属性
@@ -98,108 +101,33 @@ const filteredSites = computed(() => {
         const query = searchQuery.value.toLowerCase()
         return site.base_position.toString().toLowerCase().includes(query)
       })
-      .slice((currentPage.value - 1) * itemsPerPage, currentPage.value * itemsPerPage)
+      .slice((currentPage.value - 1) * itemsPerPage.value, currentPage.value * itemsPerPage.value)
 })
 
-const totalPages = computed(() => {
-  return Math.ceil(
-      sites.value.filter(site => site.original_data_name === sampleName).length / itemsPerPage
-  )
+const totalItems = computed(() => {
+  return sites.value.filter(site => site.original_data_name === sampleName).length
 })
 </script>
 
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #f5f5f5;
-}
-
+<style scoped>
 .containerSiteInfo {
+  width: 80%; /* 占父容器宽度的 80% */
+  margin: 0 auto; /* 水平居中 */
   padding: 20px;
-  border-radius: 8px;
-  height: 770px;
-  width: 100%; /* 使用百分比宽度 */
-  box-sizing: border-box; /* 确保内边距包含在宽度内 */
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.table th,
-.table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  white-space: nowrap; /* 防止表格内容换行 */
-  overflow: hidden;
-  text-overflow: ellipsis; /* 超出部分显示省略号 */
-}
-
-.table th {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-
-.btn-back {
-  margin-right: 20px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.btn {
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-  border: none;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
 }
 
 .search-bar {
   margin-bottom: 20px;
 }
 
-.form-control {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+.custom-card {
+  box-shadow: none; /* 去除 el-card 的阴影 */
 }
 
-.pagination {
+.pagination-button-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 20px;
-}
-
-.pagination button {
-  margin: 0 5px;
-  padding: 5px 10px;
 }
 </style>

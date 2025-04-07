@@ -53,15 +53,13 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted } from 'vue';
 import router from "@/router";
 
-export default {
-  name: 'IndexView',
-  mounted() {
-    router.push("/mitochondrialDetail")
-  }
-};
+onMounted(() => {
+  router.push("/mitochondrialDetail");
+});
 </script>
 
 <style scoped>

@@ -103,7 +103,7 @@ const handleUpload = async () => {
 
 <style scoped>
 .upload-container {
-  width: 100%; /* 容器占满父级宽度 */
+  width: 70%; /* 容器占满父级宽度 */
   max-width: 100%; /* 最大宽度限制，可按需调整 */
   margin: 20px auto;
 }

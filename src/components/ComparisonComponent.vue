@@ -1,114 +1,158 @@
 <template>
-  <div class="container">
-    <h1>线粒体详细信息</h1>
+  <div class="Com-container">
+    <el-card class="card-Com">
+      <h1>线粒体详细信息</h1>
 
-    <div v-if="loading" class="loading">
-      <p>加载中...</p>
-    </div>
-
-    <div v-else-if="error" class="error">
-      <p>{{ error }}</p>
-    </div>
-
-    <div v-else class="main-content" style="display: flex; gap: 20px;">
-      <!-- 左侧列表 -->
-      <div class="left-panel" style="flex: 1;width: 500px">
-        <div class="search-bar">
-          <input
-              type="text"
-              class="form-control"
-              v-model="searchQuery1"
-              placeholder="搜索原始数据名..."
-          />
-        </div>
-        <!-- 设置固定高度并添加滚动条 -->
-        <div class="table-container" style="height: 300px; overflow-y: auto;">
-          <table class="table">
-            <thead>
-            <tr>
-              <th>目标样本名</th>
-              <th>原始数据名</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr
-                v-for="detail in paginatedDetails1"
-                :key="detail.original_data_name"
-                @click="handleLeftSelect(detail.original_data_name,detail.sample_name)"
-                :class="{'selected-row': selectedSampleLeft === detail.original_data_name}"
-            >
-              <td>{{ detail.sample_name }}</td>
-              <td>{{ detail.original_data_name }}</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <nav  class="pagination">
-          <button class="btn btn-outline-primary" @click="prevPage1" :disabled="currentPage1 === 1">
-            上一页
-          </button>
-          <span>第 {{ currentPage1 }} 页，共 {{ totalPages1 }} 页</span>
-          <button class="btn btn-outline-primary" @click="nextPage1" :disabled="currentPage1 === totalPages1">
-            下一页
-          </button>
-        </nav>
+      <div v-if="loading" class="loading">
+        <p>加载中...</p>
       </div>
 
-
-      <!-- 右侧列表 -->
-      <div class="right-panel" style="flex: 1;width: 500px">
-        <div class="search-bar">
-          <input
-              type="text"
-              class="form-control"
-              v-model="searchQuery2"
-              placeholder="搜索原始数据名..."
-          />
-        </div>
-        <!-- 设置固定高度并添加滚动条 -->
-        <div class="table-container" style="height: 300px; overflow-y: auto;">
-          <table class="table">
-            <thead>
-            <tr>
-              <th>对比样本名</th>
-              <th>原始数据名</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr
-                v-for="detail in paginatedDetails2"
-                :key="detail.original_data_name"
-                @click="handleRightSelect(detail.original_data_name,detail.sample_name)"
-                :class="{'selected-row': selectedSampleRight === detail.original_data_name}"
-            >
-              <td>{{ detail.sample_name }}</td>
-              <td>{{ detail.original_data_name }}</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <nav  class="pagination">
-          <button class="btn btn-outline-primary" @click="prevPage2" :disabled="currentPage2 === 1">
-            上一页
-          </button>
-          <span>第 {{ currentPage2 }} 页，共 {{ totalPages2 }} 页</span>
-          <button class="btn btn-outline-primary" @click="nextPage2" :disabled="currentPage2 === totalPages2">
-            下一页
-          </button>
-
-        </nav>
+      <div v-else-if="error" class="error">
+        <p>{{ error }}</p>
       </div>
-      <div class="selected-display-below">
-        <h4>目标样本</h4>
-        <p @click="handleCancelLeftSelect" :class="{'clickable': selectedLeft}">{{ selectedLeft || '未选择' }}</p>
 
-        <h4>对比样本</h4>
-        <p @click="handleCancelRightSelect" :class="{'clickable': selectedRight}">{{ selectedRight || '未选择' }}</p>
-        <button class="bot" @click="toCom">对比</button>
+      <div v-else>
+        <!-- 给 el-tabs 添加 ref -->
+        <el-tabs type="border-card" ref="tabsRef" v-model="activeTab">
+          <el-tab-pane label="目标样本" name="target-sample">
+            <!-- 左侧列表 -->
+            <div class="left-panel" style="flex: 1;width: 500px">
+              <div class="search-bar">
+                <input
+                    type="text"
+                    class="form-control"
+                    v-model="searchQuery1"
+                    placeholder="搜索样本名..."
+                />
+              </div>
+              <!-- 设置固定高度并添加滚动条 -->
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>目标样本名</th>
+                    <th>原始数据名</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr
+                      v-for="detail in paginatedDetails1"
+                      :key="detail.original_data_name"
+                      @click="handleLeftSelect(detail.original_data_name,detail.sample_name)"
+                      :class="{'selected-row': selectedSampleLeft === detail.original_data_name}"
+                  >
+                    <td>{{ detail.sample_name }}</td>
+                    <td>{{ detail.original_data_name }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <nav class="page">
+                <el-button @click="prevPage1" :disabled="currentPage1 === 1">
+                  上一页
+                </el-button>
+                <span>第 {{ currentPage1 }} 页，共 {{ totalPages1 }} 页</span>
+                <el-button @click="nextPage1" :disabled="currentPage1 === totalPages1">
+                  下一页
+                </el-button>
+              </nav>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="比对样本" name="compare-sample">
+            <!-- 右侧列表 -->
+            <div class="right-panel" style="flex: 1;width: 500px">
+              <div class="search-bar">
+                <input
+                    type="text"
+                    class="form-control"
+                    v-model="searchQuery2"
+                    placeholder="搜索样本名..."
+                />
+              </div>
+              <!-- 设置固定高度并添加滚动条 -->
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th>对比样本名</th>
+                    <th>原始数据名</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr
+                      v-for="detail in paginatedDetails2"
+                      :key="detail.original_data_name"
+                      @click="handleRightSelect(detail.original_data_name,detail.sample_name)"
+                      :class="{'selected-row': selectedSampleRight === detail.original_data_name}"
+                  >
+                    <td>{{ detail.sample_name }}</td>
+                    <td>{{ detail.original_data_name }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <nav class="page">
+                <el-button @click="prevPage2" :disabled="currentPage2 === 1">
+                  上一页
+                </el-button>
+                <span>第 {{ currentPage2 }} 页，共 {{ totalPages2 }} 页</span>
+                <el-button @click="nextPage2" :disabled="currentPage2 === totalPages2">
+                  下一页
+                </el-button>
+              </nav>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="样本信息" name="sample-info">
+            <template #header>
+              <div class="card-header">样本信息</div>
+            </template>
+            <div>
+              <el-row>
+                <el-col :span="12">
+                  <h4>目标样本</h4>
+                  <el-alert
+                      v-if="!selectedLeft"
+                      title="未选择"
+                      type="warning"
+                      closable
+                  ></el-alert>
+                  <el-tag
+                      v-else
+                      @click="handleCancelLeftSelect"
+                      closable
+                      effect="light"
+                      type="primary"
+                  >
+                    {{ selectedLeft }}
+                  </el-tag>
+                </el-col>
+                <el-col :span="12">
+                  <h4>对比样本</h4>
+                  <el-alert
+                      v-if="!selectedRight"
+                      title="未选择"
+                      type="warning"
+                      closable
+                  ></el-alert>
+                  <el-tag
+                      v-else
+                      @click="handleCancelRightSelect"
+                      closable
+                      effect="light"
+                      type="success"
+                  >
+                    {{ selectedRight }}
+                  </el-tag>
+                </el-col>
+              </el-row>
+              <el-button class="compare-button" @click="toCom">对比</el-button>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 
@@ -116,6 +160,8 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+// 引入 ElementPlus 组件
+import { ElTabs, ElTabPane,  ElRow, ElCol, ElAlert, ElTag } from 'element-plus'
 
 // 全局数据
 const details = ref([])
@@ -137,6 +183,11 @@ const selectedSampleRight = ref(null)
 const selectedRight = ref(null)
 
 const router = useRouter()
+
+// 引用 el-tabs 组件
+const tabsRef = ref(null)
+// 新增 activeTab 来控制当前激活的标签页
+const activeTab = ref('target-sample')
 
 // 获取数据
 const fetchData = async () => {
@@ -167,6 +218,8 @@ const handleLeftSelect = (sampleName,sampleName1) => {
   } else {
     selectedSampleLeft.value = sampleName
     selectedLeft.value = sampleName1
+    // 切换到下一个标签页
+    activeTab.value = 'compare-sample'
   }
 }
 
@@ -178,6 +231,8 @@ const handleRightSelect = (sampleName,sampleName1) => {
   } else {
     selectedSampleRight.value = sampleName
     selectedRight.value = sampleName1
+    // 切换到样本信息标签页
+    activeTab.value = 'sample-info'
   }
 }
 
@@ -193,7 +248,7 @@ const handleCancelRightSelect = () => {
 // 左侧表格计算属性
 const filteredDetails1 = computed(() => {
   return details.value.filter(detail => {
-    return detail.original_data_name.includes(searchQuery1.value) && detail.original_data_name!== selectedSampleRight.value
+    return detail.sample_name.includes(searchQuery1.value) && detail.original_data_name!== selectedSampleRight.value
   })
 })
 
@@ -210,7 +265,7 @@ const totalPages1 = computed(() => {
 // 右侧表格计算属性
 const filteredDetails2 = computed(() => {
   return details.value.filter(detail => {
-    return detail.original_data_name.includes(searchQuery2.value) && detail.original_data_name!== selectedSampleLeft.value
+    return detail.sample_name.includes(searchQuery2.value) && detail.original_data_name!== selectedSampleLeft.value
   })
 })
 
@@ -245,15 +300,18 @@ const nextPage2 = () => {
 onMounted(fetchData)
 </script>
 
-<style>
-.container {
+<style scoped>
+.Com-container {
+  width: 30%; /* 设置固定宽度 */
   padding: 20px;
-  border-radius: 8px;
+  height: 70%;
+  margin: 0 auto;
 }
 
 h1 {
   color: #333;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .loading,
@@ -292,80 +350,42 @@ h1 {
 .table td {
   padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
 }
 
 .table th {
-  background-color: #f8f9fa;
-  font-weight: bold;
+  border-bottom: 1px solid #ddd;
 }
 
 .table tr:hover {
-  background-color: #f1f1f1;
+  background-color: #fcfafa;
 }
 
-.btn {
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-block;
-  text-decoration: none;
+.page{
+  margin-top: 10px;
+}
+.el-button{
+  margin: 10px;
+}
+.el-tab-pane{
+  height: 400px;
+}
+.card-header {
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-  border: none;
+.el-col{
+  padding: 20px;
+  margin-top: 90px;
 }
 
-.btn-primary:hover {
-  background-color: #0056b3;
+h4 {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  align-items: center;
-}
-
-.pagination button {
-  margin: 0 5px;
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-  background-color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination span {
-  margin: 0 10px;
-}
-
-.selected-display-below {
-  width: 200px;
-}
-
-.bot {
-  padding: 8px 16px;
-  background-color: #303da1;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.table-container {
-  height: 300px;
-  overflow-y: auto;
-}
-
-.clickable {
-  cursor: pointer;
+.card-Com{
+  margin-top: 30px;
 }
 </style>

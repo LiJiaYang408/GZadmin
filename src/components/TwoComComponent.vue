@@ -4,39 +4,28 @@
       <button @click="goBack">← 返回</button>
     </div>
     <div class="chart-container">
-      <h2>目标样本名</h2>
-      <h2>{{ route.query.selectedLeft }}</h2>
+      <h2>目标样本名：<el-tag>{{ route.query.selectedLeft }}</el-tag></h2>
       <PieChart :tableData="tableData1" />
     </div>
 
-    <div class="list-container">
+    <div class="allowance">
+      <h2>容差： {{ compareResult.length }}</h2>
+      <div class="list-container">
       <div class="result-count">
-        容差： {{ compareResult.length }}
         <span v-if="compareResult.length === 0" class="empty-tip">（无匹配结果）</span>
       </div>
-      <table>
-        <thead>
-        <tr>
-          <th>碱基位置</th>
-          <th>参考碱基</th>
-          <th>目标样本</th>
-          <th>对比样本</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(item, index) in compareResult" :key="index">
-          <td>{{ item.position }}</td>
-          <td>{{ item.standard }}</td>
-          <td>{{ item.target }}</td>
-          <td>{{ item.db }}</td>
-        </tr>
-        </tbody>
-      </table>
+
+      <el-table :data="compareResult" stripe>
+        <el-table-column prop="position" label="碱基位置"></el-table-column>
+        <el-table-column prop="standard" label="参考碱基"></el-table-column>
+        <el-table-column prop="target" label="目标样本"></el-table-column>
+        <el-table-column prop="db" label="对比样本"></el-table-column>
+      </el-table>
+      </div>
     </div>
 
     <div class="chart-container">
-      <h2>对比样本名</h2>
-      <h2>{{ route.query.selectedRight }}</h2>
+      <h2>比对样本名：<el-tag>{{ route.query.selectedRight }}</el-tag></h2>
       <PieChart :tableData="tableData2" />
     </div>
   </div>
@@ -47,6 +36,8 @@ import { onMounted, ref } from 'vue';
 import PieChart from '@/components/PieChart';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
+// 引入 ElementPlus 的 el-table 和 el-table-column
+import { ElTable, ElTableColumn } from 'element-plus';
 
 const route = useRoute();
 const router = useRouter();
@@ -125,16 +116,12 @@ button {
   height: 500px;
 }
 
+/* 移除原有的表格样式 */
 table {
-  width: 100%; /* 表格占满容器宽度 */
-  border-collapse: collapse;
+  display: none;
 }
 
-th,
-td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-  min-width: 70px;
+.allowance{
+  width: 600px;
 }
 </style>
