@@ -136,4 +136,8 @@ const paginatedDetails = computed(() => {
   box-shadow: none;
   border: none;
 }
+
+.left-panel{
+  margin-right: 20px;
+}
 </style>

@@ -16,7 +16,7 @@
         <el-tabs type="border-card" ref="tabsRef" v-model="activeTab">
           <el-tab-pane label="目标样本" name="target-sample">
             <!-- 左侧列表 -->
-            <div class="left-panel" style="flex: 1;width: 500px">
+            <div class="left-panel" style="flex: 1;">
               <div class="search-bar">
                 <input
                     type="text"
@@ -61,7 +61,7 @@
           </el-tab-pane>
           <el-tab-pane label="比对样本" name="compare-sample">
             <!-- 右侧列表 -->
-            <div class="right-panel" style="flex: 1;width: 500px">
+            <div class="right-panel" style="flex: 1;">
               <div class="search-bar">
                 <input
                     type="text"
@@ -157,7 +157,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 // 引入 ElementPlus 组件
@@ -296,8 +296,22 @@ const nextPage2 = () => {
   if (currentPage2.value < totalPages2.value) currentPage2.value++
 }
 
+// 获取 el-tab-pane 尺寸的函数
+async function getTabPaneSize() {
+  await nextTick();
+  const tabPane = document.querySelector('.el-tab-pane');
+  if (tabPane) {
+    const { width, height } = tabPane.getBoundingClientRect();
+    console.log(`el-tab-pane 的宽度: ${width}px，高度: ${height}px`);
+    // 这里可以添加更多处理尺寸数据的逻辑
+  }
+}
+
 // 初始加载
-onMounted(fetchData)
+onMounted(async () => {
+  await fetchData();
+  await getTabPaneSize();
+})
 </script>
 
 <style scoped>
@@ -388,4 +402,5 @@ h4 {
 .card-Com{
   margin-top: 30px;
 }
+
 </style>
