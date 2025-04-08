@@ -14,6 +14,9 @@ const routes = [
         path: '/',
         name: 'Login',
         component: Login,
+        meta: {
+            title: 'FIMTA法庭科学二代测序线粒体分析比对软件'
+        }
     },
 
     {
@@ -25,36 +28,57 @@ const routes = [
                 path: '/mitochondrialDetail',
                 name: 'MitochondrialDetail',
                 component: MitochondrialDetail,
+                meta: {
+                    title: '样本信息'
+                }
             },
             {
                 path: '/siteInfo',
                 name: 'SiteInfo',
                 component: SiteInfo,
+                meta: {
+                    title: '样本详情'
+                }
             },
             {
                 path: '/fileUpload',
                 name: 'FileUpload',
                 component: FileUpload,
+                meta: {
+                    title: '文件上传'
+                }
             },
             {
                 path: '/comparison',
                 name: 'Comparison',
                 component: Comparison,
+                meta: {
+                    title: '比对（1/1）'
+                }
             },
             {
                 path: '/twoComComponent',
                 name: 'TwoComComponent',
                 component: TwoComComponent,
+                meta: {
+                    title: '比对详情'
+                }
             },
             {
                 path: '/oneComN',
                 name: 'oneComN',
                 component: oneComN,
+                meta: {
+                    title: '比对（1/N）'
+                }
             },
             {
                 path: '/recordsComponent',
                 name: 'recordsComponent',
                 component: RecordsComponent,
+                meta: {
+                    title: '比对记录'
+                }
             },
         ]
     }
@@ -63,6 +87,13 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+// 配置导航守卫
+router.beforeEach((to, from, next) => {
+    if (to.meta.title) {
+        document.title = to.meta.title;
+    }
+    next();
 });
 
 export default router;

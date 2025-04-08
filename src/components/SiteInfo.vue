@@ -120,10 +120,6 @@ const totalItems = computed(() => {
   margin-bottom: 20px;
 }
 
-.custom-card {
-  box-shadow: none; /* 去除 el-card 的阴影 */
-}
-
 .pagination-button-container {
   display: flex;
   justify-content: space-between;

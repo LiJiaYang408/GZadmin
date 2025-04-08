@@ -125,18 +125,6 @@ const paginatedDetails = computed(() => {
   margin-top: 20px;
 }
 
-/* 去除 el-card 的阴影 */
-.el-card {
-  box-shadow: none;
-  border: none;
-}
-
-/* 去除 el-table 的阴影 */
-.el-table {
-  box-shadow: none;
-  border: none;
-}
-
 .left-panel{
   margin-right: 20px;
 }
