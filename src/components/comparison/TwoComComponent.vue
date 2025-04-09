@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="back-btn-container">
-      <button @click="goBack">← 返回</button>
+      <el-button @click="goBack">返回</el-button>
     </div>
     <div class="chart-container">
       <h2>目标样本名：<el-tag>{{ route.query.selectedLeft }}</el-tag></h2>
@@ -97,14 +97,6 @@ const goBack = () => {
   left: 20px;
 }
 
-button {
-  padding: 8px 16px;
-  background-color: #182383;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
 
 .chart-container {
   flex: 1;

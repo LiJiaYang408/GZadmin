@@ -3,7 +3,7 @@
   <div class="Rec-container">
     <el-card class="card-h1">
       <h1 >比对记录</h1>
-      <RecordList
+      <RecordListTime
           :details="details"
           :type="false"/>
     </el-card>
@@ -13,8 +13,8 @@
 
 <script setup>
 import {onMounted, ref} from 'vue'
-import RecordList from './RecordList.vue'
-import axios from "axios"; // 引入 RecordList 组件
+import axios from "axios";
+import RecordListTime from "@/components/record/RecordListTime"; // 引入 RecordList 组件
 
 const details=ref([])
 

@@ -4,10 +4,10 @@ import MitochondrialDetail from '../components/MitochondrialDetail';
 import SiteInfo from '../components/SiteInfo';
 import IndexView from "@/views/IndexView";
 import FileUpload from "@/components/FileUploadComponent"
-import Comparison from "@/components/ComparisonComponent"
-import TwoComComponent from "@/components/TwoComComponent";
-import oneComN from "@/components/OneComNComponent"
-import RecordsComponent from "@/components/RecordsComponent"
+import Comparison from "@/components/comparison/ComparisonComponent"
+import TwoComComponent from "@/components/comparison/TwoComComponent";
+import oneComN from "@/components/comparison/OneComNComponent"
+import RecordsComponent from "@/components/record/RecordsComponent"
 
 const routes = [
     {

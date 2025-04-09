@@ -7,26 +7,29 @@
         placeholder="选择查询日期..."
         style="width: 100%; margin-bottom: 20px;"
     ></el-date-picker>
-    <el-collapse v-if="groupedFilteredDetails.length > 0" :accordion="false" :model-value="openedItems">
-      <el-collapse-item
-          v-for="(group, index) in paginatedGroupedDetails"
-          :key="index"
-          :name="index.toString()"
-          :title="group.timeGroup"
-      >
-        <el-table :data="group.details">
-          <el-table-column prop="time" label="分析日期" :formatter="formatDate"></el-table-column>
-          <el-table-column prop="goal_name" label="目标样本名"></el-table-column>
-          <el-table-column prop="compare_name" label="比对样本名"></el-table-column>
-          <el-table-column prop="allowance" label="容差"></el-table-column>
-          <el-table-column label="操作">
-            <template #default="scope">
-              <el-button type="primary" @click="toCom(scope.row.original_goal, scope.row.original_compare, scope.row.goal_name, scope.row.compare_name)">查看信息</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-collapse-item>
-    </el-collapse>
+    <!-- 添加滚动容器 -->
+    <div class="scroll-container" v-if="groupedFilteredDetails.length > 0">
+      <el-collapse :accordion="false" :model-value="openedItems">
+        <el-collapse-item
+            v-for="(group, index) in paginatedGroupedDetails"
+            :key="index"
+            :name="index.toString()"
+            :title="group.timeGroup"
+        >
+          <el-table :data="group.details">
+            <el-table-column prop="time" label="分析日期" :formatter="formatDate"></el-table-column>
+            <el-table-column prop="goal_name" label="目标样本名"></el-table-column>
+            <el-table-column prop="compare_name" label="比对样本名"></el-table-column>
+            <el-table-column prop="allowance" label="容差"></el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button type="primary" @click="toCom(scope.row.original_goal, scope.row.original_compare, scope.row.goal_name, scope.row.compare_name)">查看信息</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
     <p v-else>没有找到匹配的数据。</p>
     <el-pagination
         @size-change="handleGroupSizeChange"
@@ -82,6 +85,8 @@ const handleGroupSizeChange = (newSize) => {
 
 const handleGroupCurrentChange = (newPage) => {
   groupCurrentPage.value = newPage;
+  // 关闭所有折叠框
+  closeAllItems();
 };
 
 // 修改过滤逻辑，根据日期进行过滤
@@ -148,5 +153,10 @@ watch(() => props.type, (newType) => {
   width: 100%;
   max-width: 100%;
   margin: 20px;
+}
+
+.scroll-container {
+  max-height: 300px; /* 可根据需要调整最大高度 */
+  overflow-y: auto; /* 当内容超过最大高度时显示垂直滚动条 */
 }
 </style>

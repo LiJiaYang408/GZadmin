@@ -46,7 +46,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import RecordList from './RecordList.vue'
+import RecordList from '../record/RecordList.vue'
 import { useStore } from 'vuex'
 
 const store = useStore()

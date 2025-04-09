@@ -74,6 +74,7 @@ onMounted(() => {
 .el-header-img{
   width: 100%;
   height: 100px;
+  z-index: 100;
 }
 
 .logo-container {

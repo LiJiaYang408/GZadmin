@@ -1,24 +1,18 @@
 <template>
   <div class="upload-container">
-    <h3>数据入库</h3>
+    <!-- 保持现有内容 -->
     <div class="drag-upload"
          @dragenter="handleDragEnter"
          @dragover="handleDragOver"
          @dragleave="handleDragLeave"
          @drop="handleDrop">
-      <!-- 添加 multiple 属性以支持多选 -->
-      <input type="file" ref="fileInput" @change="handleFileChange" accept="*" multiple>
-      <div v-if="!files.length" class="upload-placeholder">
+      <input type="file" ref="fileInput" @change="handleFileChange" accept="*">
+      <div v-if="!file" class="upload-placeholder">
         <i class="icon-upload"></i>
-        <p>拖拽或 点击上传</p>
-        <span>可选择多份文件批量入库</span>
-        <p>注意：多文件类型需要相同</p>
+        <p>选择单个文件进行比对</p>
       </div>
-      <div v-if="files.length" class="file-info">
-        <ul>
-          <!-- 循环显示选择的文件名 -->
-          <li v-for="file in files" :key="file.name">{{ file.name }}</li>
-        </ul>
+      <div v-if="file" class="file-info">
+        <p>{{ getDisplayFileName(file.name) }}</p>
       </div>
     </div>
     <div class="upload-options">
@@ -28,27 +22,35 @@
       <label>
         <input type="radio" v-model="uploadType" value="segment">Vcf
       </label>
-      <button class="confirm-btn" @click="handleUpload">确认上传</button>
+      <button class="confirm-btn" @click="handleUpload">确认</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
+import { ref } from 'vue'
+import axios from 'axios'
+import { defineEmits } from 'vue'
 
-// 使用数组存储多个文件
-const files = ref([]);
+const emits = defineEmits(['fileUploaded'])
+
+const file = ref(null);
 const uploadType = ref('whole');
 const fileInput = ref(null);
+const flag = ref(false);
+const MAX_DISPLAY_NAME_LENGTH = 20;
 
-// 文件选择处理
-const handleFileChange = (e) => {
-  // 将选择的文件转换为数组
-  files.value = Array.from(e.target.files);
+const getDisplayFileName = (name) => {
+  if (name.length > MAX_DISPLAY_NAME_LENGTH) {
+    return name.slice(0, MAX_DISPLAY_NAME_LENGTH) + '...';
+  }
+  return name;
 };
 
-// 拖拽事件处理
+const handleFileChange = (e) => {
+  file.value = e.target.files[0];
+};
+
 const handleDragEnter = (e) => {
   e.preventDefault();
   e.stopPropagation();
@@ -64,31 +66,32 @@ const handleDragLeave = (e) => {
 const handleDrop = (e) => {
   e.preventDefault();
   e.stopPropagation();
-  // 将拖拽的文件转换为数组
-  files.value = Array.from(e.dataTransfer.files);
+  file.value = e.dataTransfer.files[0];
 };
 
-// 上传处理
 const handleUpload = async () => {
-  if (!files.value.length) {
+  if (!file.value) {
     alert('请选择文件');
     return;
   }
 
+  const confirmResult = confirm('是否将该样本入库？');
+  if (confirmResult) {
+    flag.value = true;
+  }
+
   const formData = new FormData();
-
-  files.value.forEach((file) => {
-    formData.append('file', file);
-  });
+  formData.append('file', file.value);
   formData.append('uploadType', uploadType.value);
-
+  formData.append('flag', flag.value);
 
   try {
-    const response = await axios.post('/api/upload', formData, {
+    const response = await axios.post('/api/getUpd', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     if (response.data && response.data.code === 200 && response.data.data && response.data.data.body && response.data.data.body.message) {
       alert(`上传成功：${response.data.data.body.message}`);
+      emits('fileUploaded', file.value.name);
     } else {
       alert('上传成功，但响应信息格式有误');
     }

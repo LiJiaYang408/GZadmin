@@ -115,19 +115,17 @@ const paginatedDetails = computed(() => {
 .Mit-container {
   margin: 0 auto;
   padding: 20px;
-  width: 80%;
+  width: 70%;
 }
 
 .left-panel {
   margin-bottom: 20px;
-  width: 80%;
+  width: 65%;
 }
 
-.right-panel {
-  margin-top: 20px;
+.right-panel{
+  width: 40%;
+  margin-left: 30px;
 }
 
-.left-panel{
-  margin-right: 20px;
-}
 </style>
