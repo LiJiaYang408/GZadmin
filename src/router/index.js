@@ -45,7 +45,7 @@ const routes = [
                 name: 'FileUpload',
                 component: FileUpload,
                 meta: {
-                    title: '文件上传'
+                    title: '数据入库'
                 }
             },
             {
@@ -88,7 +88,8 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
 });
-// 配置导航守卫
+
+
 router.beforeEach((to, from, next) => {
     if (to.meta.title) {
         document.title = to.meta.title;

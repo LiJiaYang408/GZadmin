@@ -1,6 +1,6 @@
 <template>
   <div class="upload-container">
-    <h3>文件上传</h3>
+    <h3>数据入库</h3>
     <div class="drag-upload"
          @dragenter="handleDragEnter"
          @dragover="handleDragOver"
@@ -11,7 +11,8 @@
       <div v-if="!files.length" class="upload-placeholder">
         <i class="icon-upload"></i>
         <p>拖拽或 点击上传</p>
-        <span>可选择多份文件</span>
+        <span>可选择多份文件批量入库</span>
+        <p>注意：多文件类型需要相同</p>
       </div>
       <div v-if="files.length" class="file-info">
         <ul>

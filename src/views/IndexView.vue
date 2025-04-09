@@ -21,7 +21,7 @@
           <router-link to="/fileUpload">
             <li>
               <img src="@/assets/FileUpload.png" class="el-aside-img">
-              <span>文件上传</span>
+              <span>数据入库</span>
             </li>
           </router-link>
           <router-link to="/comparison">

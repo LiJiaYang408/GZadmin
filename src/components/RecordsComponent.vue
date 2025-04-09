@@ -31,12 +31,12 @@ onMounted(() => {
 
 <style scoped>
 .Rec-container{
-  padding-right: 40px;
   margin: 0 auto;
   width: 70%;
 }
 
 .card-h1{
   margin-top: 30px;
+  padding-right: 40px;
 }
 </style>

@@ -34,6 +34,7 @@
           <el-card style="height: 100%">
           <RecordList
               :details="details"
+              :type="true"
           />
           </el-card>
         </div>
