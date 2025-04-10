@@ -48,14 +48,14 @@ const compareResult = ref([]);
 
 const fetchData = async () => {
   try {
-    const response1 = await axios.get('/table/getMitochondrialDetailDetails?name=' + route.query.sampleName1);
+    const response1 = await axios.get('/comparison/getMitochondrialDetailDetails?name=' + route.query.sampleName1+'&&name2='+route.query.selectedLeft);
     tableData1.value = response1.data.data;
-    const response2 = await axios.get('/table/getMitochondrialDetailDetails?name=' + route.query.sampleName2);
+    const response2 = await axios.get('/comparison/getMitochondrialDetailDetails?name=' + route.query.sampleName2+'&&name2='+route.query.selectedRight);
     tableData2.value = response2.data.data;
 
     // 从后端获取对比结果
     const compareResponse = await axios.get(
-        `/comparison/compare?sampleName1=${route.query.sampleName1}&sampleName2=${route.query.sampleName2}`
+        `/comparison/complexityCompare?sampleName1=${route.query.sampleName1}&name1=${route.query.selectedLeft}&sampleName2=${route.query.sampleName2}&name2=${route.query.selectedRight}`
     );
     compareResult.value = compareResponse.data;
   } catch (error) {

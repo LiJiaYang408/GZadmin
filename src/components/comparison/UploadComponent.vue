@@ -30,9 +30,12 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
-import { defineEmits } from 'vue'
-
-const emits = defineEmits(['fileUploaded'])
+const props = defineProps({
+  onUploadSuccess: {
+    type: Function,
+    default: () => {}
+  }
+})
 
 const file = ref(null);
 const uploadType = ref('whole');
@@ -86,21 +89,12 @@ const handleUpload = async () => {
   formData.append('flag', flag.value);
 
   try {
-    const response = await axios.post('/api/getUpd', formData, {
+    const response = await axios.post('/api/uploadRedis', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    if (response.data && response.data.code === 200 && response.data.data && response.data.data.body && response.data.data.body.message) {
-      alert(`上传成功：${response.data.data.body.message}`);
-      emits('fileUploaded', file.value.name);
-    } else {
-      alert('上传成功，但响应信息格式有误');
-    }
+    props.onUploadSuccess(response.data.data);
   } catch (error) {
-    if (error.response && error.response.data && error.response.data.code!== 200 && error.response.data.message) {
-      alert(`上传失败：${error.response.data.message}`);
-    } else {
-      alert('上传失败：未知错误');
-    }
+    console.error('文件上传失败:', error);
   }
 };
 </script>

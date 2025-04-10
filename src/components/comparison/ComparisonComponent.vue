@@ -28,7 +28,7 @@
               </div>
               <!-- 文件上传区域 -->
               <div class="right-Right">
-                <UploadComponent />
+                <UploadComponent :onUploadSuccess="(data) => handleUploadSuccess('target-sample', data)" />
               </div>
 
             </div>
@@ -36,18 +36,18 @@
           <el-tab-pane label="比对样本" name="compare-sample">
             <!-- 右侧列表 -->
             <div class="main-content">
-            <div class="left-List">
-              <ListComponent
-                  :details="details"
-                  header1="对比样本名"
-                  header2="原始数据名"
-                  :selectedSampleOther="selectedSampleLeft"
-                  @select="handleRightSelect"
-              />
-            </div>
+              <div class="left-List">
+                <ListComponent
+                    :details="details"
+                    header1="对比样本名"
+                    header2="原始数据名"
+                    :selectedSampleOther="selectedSampleLeft"
+                    @select="handleRightSelect"
+                />
+              </div>
               <!-- 文件上传区域 -->
               <div class="right-Right">
-                <UploadComponent />
+                <UploadComponent :onUploadSuccess="(data) => handleUploadSuccess('compare-sample', data)" />
               </div>
             </div>
 
@@ -148,7 +148,7 @@ const fetchData = async () => {
 }
 
 const toCom = () => {
-  if (selectedSampleLeft.value!== null && selectedSampleRight.value!== null) {
+  if (selectedLeft.value!== null && selectedRight.value!== null) {
     router.push({
       path: `/twoComComponent`,
       query: {
@@ -208,6 +208,17 @@ async function getTabPaneSize() {
     // 这里可以添加更多处理尺寸数据的逻辑
   }
 }
+
+// 处理文件上传成功事件
+const handleUploadSuccess = (tabName, data) => {
+  if (tabName === 'target-sample') {
+    selectedLeft.value = data;
+    activeTab.value = 'compare-sample'
+  } else if (tabName === 'compare-sample') {
+    selectedRight.value = data;
+    activeTab.value = 'sample-info'
+  }
+};
 
 // 初始加载
 onMounted(async () => {
