@@ -152,6 +152,7 @@ const toCom = () => {
     router.push({
       path: `/twoComComponent`,
       query: {
+        flag:true,
         sampleName1: selectedSampleLeft.value,
         sampleName2: selectedSampleRight.value,
         selectedLeft: selectedLeft.value,
@@ -212,9 +213,11 @@ async function getTabPaneSize() {
 // 处理文件上传成功事件
 const handleUploadSuccess = (tabName, data) => {
   if (tabName === 'target-sample') {
+    selectedSampleLeft.value=null;
     selectedLeft.value = data;
     activeTab.value = 'compare-sample'
   } else if (tabName === 'compare-sample') {
+    selectedSampleRight.value=null;
     selectedRight.value = data;
     activeTab.value = 'sample-info'
   }

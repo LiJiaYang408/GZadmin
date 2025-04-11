@@ -16,20 +16,19 @@
       </div>
     </div>
     <div class="upload-options">
-      <label>
-        <input type="radio" v-model="uploadType" value="whole">Excel
-      </label>
-      <label>
-        <input type="radio" v-model="uploadType" value="segment">Vcf
-      </label>
-      <button class="confirm-btn" @click="handleUpload">确认</button>
+      <el-radio-group v-model="uploadType">
+        <el-radio label="whole">Excel</el-radio>
+        <el-radio label="segment">Vcf</el-radio>
+      </el-radio-group>
+      <el-button type="primary" @click="handleUpload" style="width: 30%">确认</el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref ,defineProps} from 'vue'
 import axios from 'axios'
+import {ElMessage} from "element-plus";
 const props = defineProps({
   onUploadSuccess: {
     type: Function,
@@ -74,7 +73,7 @@ const handleDrop = (e) => {
 
 const handleUpload = async () => {
   if (!file.value) {
-    alert('请选择文件');
+    ElMessage.error('请选择文件');
     return;
   }
 
@@ -155,12 +154,4 @@ const handleUpload = async () => {
   margin-right: 0;
 }
 
-.confirm-btn {
-  padding: 8px 20px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
 </style>

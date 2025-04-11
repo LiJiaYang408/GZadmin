@@ -11,16 +11,16 @@
     <div class="allowance">
       <h2>容差： {{ compareResult.length }}</h2>
       <div class="list-container">
-      <div class="result-count">
-        <span v-if="compareResult.length === 0" class="empty-tip">（无匹配结果）</span>
-      </div>
+        <div class="result-count">
+          <span v-if="compareResult.length === 0 && !isLoading" class="empty-tip">（无匹配结果）</span>
+        </div>
 
-      <el-table :data="compareResult" stripe>
-        <el-table-column prop="position" label="碱基位置"></el-table-column>
-        <el-table-column prop="standard" label="参考碱基"></el-table-column>
-        <el-table-column prop="target" label="目标样本"></el-table-column>
-        <el-table-column prop="db" label="对比样本"></el-table-column>
-      </el-table>
+        <el-table :data="compareResult" stripe v-loading="isLoading" >
+          <el-table-column prop="position" label="碱基位置"></el-table-column>
+          <el-table-column prop="standard" label="参考碱基"></el-table-column>
+          <el-table-column prop="target" label="目标样本"></el-table-column>
+          <el-table-column prop="db" label="对比样本"></el-table-column>
+        </el-table>
       </div>
     </div>
 
@@ -37,7 +37,7 @@ import PieChart from '@/components/PieChart';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 // 引入 ElementPlus 的 el-table 和 el-table-column
-import { ElTable, ElTableColumn } from 'element-plus';
+import {ElMessage, ElTable, ElTableColumn} from 'element-plus';
 
 const route = useRoute();
 const router = useRouter();
@@ -45,6 +45,7 @@ const router = useRouter();
 const tableData1 = ref([]);
 const tableData2 = ref([]);
 const compareResult = ref([]);
+const isLoading = ref(true); // 添加加载状态
 
 const fetchData = async () => {
   try {
@@ -55,7 +56,7 @@ const fetchData = async () => {
 
     // 从后端获取对比结果
     const compareResponse = await axios.get(
-        `/comparison/complexityCompare?sampleName1=${route.query.sampleName1}&name1=${route.query.selectedLeft}&sampleName2=${route.query.sampleName2}&name2=${route.query.selectedRight}`
+        `/comparison/complexityCompare?flag=${route.query.flag}&sampleName1=${route.query.sampleName1}&name1=${route.query.selectedLeft}&sampleName2=${route.query.sampleName2}&name2=${route.query.selectedRight}`
     );
     compareResult.value = compareResponse.data;
   } catch (error) {
@@ -64,11 +65,13 @@ const fetchData = async () => {
       alert(`请求失败，请检查网络连接或 Redis 是否开启，状态码：${error.response.status}，错误信息：${error.response.data.message}`);
     } else if (error.request) {
       // 请求已发送，但没有收到响应
-      alert('没有收到服务器响应，请检查网络连接或 Redis 是否开启。');
+      ElMessage.error('没有收到服务器响应，请检查网络连接或 Redis 是否开启。');
     } else {
       // 其他错误
-      alert(`发生未知错误：${error.message}`);
+      ElMessage.error(`发生未知错误：${error.message}`);
     }
+  } finally {
+    isLoading.value = false; // 请求完成后，将加载状态设置为 false
   }
 };
 

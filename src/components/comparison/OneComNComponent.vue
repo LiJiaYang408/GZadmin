@@ -1,9 +1,12 @@
 <template>
   <div class="upload-container">
-      <div class="main-content">
-        <!-- 左侧上传区域 -->
-        <div class="OneLeft">
-          <h3>上传文件比对</h3>
+    <div class="main-content">
+      <!-- 左侧上传区域 -->
+      <div class="OneLeft">
+        <el-card>
+          <template #header>
+            <h3>上传文件比对</h3>
+          </template>
           <div class="drag-upload"
                @dragenter="handleDragEnter"
                @dragover="handleDragOver"
@@ -19,41 +22,54 @@
             </div>
           </div>
           <div class="upload-options">
-            <label>
-              <input type="radio" v-model="uploadType" value="whole">Excel
-            </label>
-            <label>
-              <input type="radio" v-model="uploadType" value="segment">Vcf
-            </label>
-            <button class="confirm-btn" @click="handleUpload">确认上传</button>
+            <el-radio-group v-model="uploadType">
+              <el-radio label="whole">Excel</el-radio>
+              <el-radio label="segment">Vcf</el-radio>
+            </el-radio-group>
+            <el-button type="primary" @click="handleUpload">确认比对</el-button>
+            <el-button @click="openDialog">设置比对容差阈值</el-button>
           </div>
-        </div>
+        </el-card>
+      </div>
 
-        <!-- 右侧表格区域，使用 RecordList 组件 -->
-        <div class="OneRight">
-          <el-card style="height: 100%">
+      <!-- 右侧表格区域，使用 RecordList 组件 -->
+      <div class="OneRight">
+        <el-card style="height: 100%">
           <RecordList
               :details="details"
               :type="true"
           />
-          </el-card>
-        </div>
+        </el-card>
       </div>
+    </div>
+    <el-dialog v-model="dialogVisible" title="设置比对容差阈值" width="500"  center @close="handleDialogClose">
+      <el-tag type="primary" style="margin-bottom: 10px">比对容差阈值（默认值：10）</el-tag>
+      <br/>
+      <el-input style="width: 60%" v-model="toleranceThreshold" placeholder="请输入比对容差阈值（默认值：10）"></el-input>
+      <div style="float: right">
+        <el-button  type="primary" @click="handleConfirm">确认</el-button>
+        <el-button   @click="handleCancel">取消</el-button>
+      </div>
+
+    </el-dialog>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import RecordList from '../record/RecordList.vue'
 import { useStore } from 'vuex'
+import {ElCard, ElRadioGroup, ElRadio, ElButton, ElDialog, ElMessage} from 'element-plus';
 
 const store = useStore()
 const selectedFile = ref(null);
 const uploadType = ref('whole');
 const fileInput = ref(null);
 const details = ref([])
+const dialogVisible = ref(false);
+const toleranceThreshold = ref(10)
+const isConfirm = ref(false);
 
 // 处理文件选择事件
 const handleFileChange = (e) => {
@@ -84,13 +100,14 @@ const handleDrop = (e) => {
 // 处理文件上传
 const handleUpload = async () => {
   if (!selectedFile.value) {
-    alert('请选择文件');
+    ElMessage.error('请选择文件');
     return;
   }
 
   const formData = new FormData();
   formData.append('file', selectedFile.value);
   formData.append('uploadType', uploadType.value);
+  formData.append('num',toleranceThreshold.value)
 
   try {
     const response = await axios.post('/records/upload', formData, {
@@ -98,23 +115,47 @@ const handleUpload = async () => {
     });
     const message = response.data?.message || '上传成功';
     store.commit('setDetails', response.data.data)
-    details.value= response.data.data
-    alert(message);
+    details.value = response.data.data;
+    ElMessage.success(message);
   } catch (error) {
     const errorMessage = error.response?.data?.message || '上传失败：未知错误';
-    alert(errorMessage);
+    ElMessage.error(errorMessage);
   }
+};
+
+// 打开对话框
+const openDialog = () => {
+  dialogVisible.value = true;
+};
+
+// 处理对话框确认
+const handleConfirm = () => {
+  isConfirm.value = true;
+  dialogVisible.value = false;
+};
+
+// 处理对话框取消
+const handleCancel = () => {
+  isConfirm.value = false;
+  dialogVisible.value = false;
+  toleranceThreshold.value = 10;
+};
+
+// 处理对话框关闭事件
+const handleDialogClose = () => {
+  if (!isConfirm.value) {
+    toleranceThreshold.value = 10;
+  }
+  isConfirm.value = false;
 };
 
 // 生命周期
 onMounted(() => {
-  if (store.state.details!=null){
-    details.value=store.state.details
-
+  if (store.state.details!= null) {
+    details.value = store.state.details;
   }
 })
 </script>
-
 
 <style scoped>
 .upload-container {
@@ -127,7 +168,6 @@ onMounted(() => {
   display: flex;
   gap: 20px;
 }
-
 
 .drag-upload {
   border: 2px dashed #e0e0e0;
@@ -181,29 +221,7 @@ onMounted(() => {
   align-items: center;
 }
 
-.upload-options label {
-  margin-right: 0;
-}
-
-.confirm-btn {
-  padding: 8px 20px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.confirm-btn:hover {
-  background-color: #45a049;
-}
-
-.OneRight{
-  width: 30%;
-}
-
-.OneRight{
+.OneRight {
   width: 70%;
 }
 </style>

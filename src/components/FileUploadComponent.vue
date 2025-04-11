@@ -22,13 +22,11 @@
       </div>
     </div>
     <div class="upload-options">
-      <label>
-        <input type="radio" v-model="uploadType" value="whole">Excel
-      </label>
-      <label>
-        <input type="radio" v-model="uploadType" value="segment">Vcf
-      </label>
-      <button class="confirm-btn" @click="handleUpload">确认上传</button>
+      <el-radio-group v-model="uploadType">
+        <el-radio label="whole">Excel</el-radio>
+        <el-radio label="segment">Vcf</el-radio>
+      </el-radio-group>
+      <el-button type="primary" @click="handleUpload">确认上传</el-button>
     </div>
   </div>
 </template>
@@ -36,6 +34,7 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import {ElMessage} from "element-plus";
 
 // 使用数组存储多个文件
 const files = ref([]);
@@ -88,15 +87,15 @@ const handleUpload = async () => {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     if (response.data && response.data.code === 200 && response.data.data && response.data.data.body && response.data.data.body.message) {
-      alert(`上传成功：${response.data.data.body.message}`);
+      ElMessage.success(`上传成功：${response.data.data.body.message}`);
     } else {
-      alert('上传成功，但响应信息格式有误');
+      ElMessage.error('上传成功，但响应信息格式有误');
     }
   } catch (error) {
     if (error.response && error.response.data && error.response.data.code!== 200 && error.response.data.message) {
-      alert(`上传失败：${error.response.data.message}`);
+      ElMessage.success(`上传失败：${error.response.data.message}`);
     } else {
-      alert('上传失败：未知错误');
+      ElMessage.error('上传失败：未知错误');
     }
   }
 };
@@ -158,12 +157,5 @@ const handleUpload = async () => {
   margin-right: 0;
 }
 
-.confirm-btn {
-  padding: 8px 20px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+
 </style>
