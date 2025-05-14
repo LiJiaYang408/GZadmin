@@ -27,13 +27,13 @@
           <router-link to="/comparison">
             <li>
               <img src="@/assets/comparison.png" class="el-aside-img">
-              <span>数据比对（1/1）</span>
+              <span>比对 1/1</span>
             </li>
           </router-link>
           <router-link to="/oneComN">
             <li>
               <img src="@/assets/one-to-many.png" class="el-aside-img">
-              <span>数据比对（1/n）</span>
+              <span>比对 1/N</span>
             </li>
           </router-link>
           <router-link to="/recordsComponent">
@@ -73,7 +73,7 @@ onMounted(() => {
 
 .el-header-img{
   width: 100%;
-  height: 100px;
+  height: 80px;
   z-index: 100;
 }
 
@@ -90,15 +90,14 @@ onMounted(() => {
 }
 
 .el-aside-img{
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
 }
 
 .sidebar {
   background-image: url("@/assets/Aside.jpg");
   color: white;
-  width: 120px;
-  padding: 20px 0;
+  width: 100px;
   overflow-y: auto;
 }
 
@@ -108,13 +107,23 @@ onMounted(() => {
 }
 
 .nav-menu li {
-  margin-bottom: 10px;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
 }
+
 
 .nav-menu a {
   display: flex;
   align-items: center;
-  padding: 10px 20px;
   color: white;
   text-decoration: none;
   transition: background-color 0.3s;
@@ -122,18 +131,6 @@ onMounted(() => {
 
 .nav-menu a:hover {
   background-color: #0055ff;
-}
-
-.nav-menu i {
-  margin-right: 10px;
-  font-size: 20px;
-}
-
-.version {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  font-size: 14px;
 }
 
 .main-content {

@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 // 引入 ElementPlus 组件
@@ -152,7 +152,7 @@ const toCom = () => {
     router.push({
       path: `/twoComComponent`,
       query: {
-        flag:true,
+        flag: true,
         sampleName1: selectedSampleLeft.value,
         sampleName2: selectedSampleRight.value,
         selectedLeft: selectedLeft.value,
@@ -193,10 +193,12 @@ const handleRightSelect = (sampleName, sampleName1) => {
 
 const handleCancelLeftSelect = () => {
   selectedSampleLeft.value = null
+  selectedLeft.value = null
 }
 
 const handleCancelRightSelect = () => {
   selectedSampleRight.value = null
+  selectedRight.value = null
 }
 
 // 获取 el-tab-pane 尺寸的函数
@@ -213,13 +215,20 @@ async function getTabPaneSize() {
 // 处理文件上传成功事件
 const handleUploadSuccess = (tabName, data) => {
   if (tabName === 'target-sample') {
-    selectedSampleLeft.value=null;
+    selectedSampleLeft.value = null;
     selectedLeft.value = data;
     activeTab.value = 'compare-sample'
   } else if (tabName === 'compare-sample') {
-    selectedSampleRight.value=null;
+    selectedSampleRight.value = null;
     selectedRight.value = data;
     activeTab.value = 'sample-info'
+  }
+};
+
+// 监听键盘事件
+const handleKeyDown = (event) => {
+  if (event.key === 'Enter' && activeTab.value === 'sample-info') {
+    toCom();
   }
 };
 
@@ -227,6 +236,12 @@ const handleUploadSuccess = (tabName, data) => {
 onMounted(async () => {
   await fetchData();
   await getTabPaneSize();
+  window.addEventListener('keydown', handleKeyDown);
+})
+
+// 组件卸载时移除事件监听器
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown);
 })
 </script>
 
@@ -278,12 +293,12 @@ h4 {
   margin-top: 30px;
 }
 
-.left-List{
+.left-List {
   width: 60%;
   margin-right: 30px;
 }
 
-.right-Right{
+.right-Right {
   width: 40%;
 }
 </style>

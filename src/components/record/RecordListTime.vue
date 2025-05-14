@@ -23,7 +23,7 @@
             <el-table-column prop="allowance" label="容差"></el-table-column>
             <el-table-column label="操作">
               <template #default="scope">
-                <el-button type="primary" @click="toCom(scope.row.original_goal, scope.row.original_compare, scope.row.goal_name, scope.row.compare_name)">查看信息</el-button>
+                <el-button type="primary" @click="getCount(scope.row.original_goal, scope.row.original_compare, scope.row.goal_name, scope.row.compare_name)">查看信息</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -50,6 +50,7 @@
 import { ref, computed, defineProps, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElDatePicker, ElTable, ElTableColumn, ElButton, ElPagination, ElCollapse, ElCollapseItem } from 'element-plus';
+import axios from "axios";
 
 // 接收父组件传递的数据
 const props = defineProps({
@@ -74,6 +75,21 @@ const formatDate = (row, column, cellValue) => {
   const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
   return new Date(cellValue).toLocaleDateString('zh-CN', options);
 };
+
+
+const getCount = async (sampleName1, sampleName2, selectedLeft, selectedRight) => {
+
+  const response = await axios.get(
+      `/comparison/getSiteListCount?sampleName1=${sampleName1}&name1=${selectedLeft}&sampleName2=${sampleName2}&name2=${selectedRight}`
+  );
+  console.log(response.data.data)
+  if (response.data.data) {
+    alert("此数据未入库，临时数据，不可从历史记录查看详情！");
+    return;
+  }
+
+  toCom(sampleName1, sampleName2, selectedLeft, selectedRight)
+}
 
 const toCom = (sampleName1, sampleName2, selectedLeft, selectedRight) => {
   router.push({ path: `/twoComComponent`, query: {flag: "false", sampleName1: sampleName1, sampleName2: sampleName2, selectedRight: selectedRight, selectedLeft: selectedLeft } });

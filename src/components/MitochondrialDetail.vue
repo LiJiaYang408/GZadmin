@@ -23,7 +23,7 @@
             <el-table-column prop="original_data_name" label="原始数据名" />
             <el-table-column label="操作">
               <template #default="scope">
-                <el-button @click="goToSiteInfo(scope.row.original_data_name)">查看信息</el-button>
+                <el-button @click="goToSiteInfo(scope.row.original_data_name)">查看详情</el-button>
               </template>
             </el-table-column>
           </el-table>

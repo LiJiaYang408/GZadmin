@@ -56,7 +56,7 @@ const formatDate = (row, column, cellValue) => {
 };
 
 const toCom = (sampleName1, sampleName2, selectedLeft, selectedRight) => {
-  router.push({ path: `/twoComComponent`, query: { sampleName1: sampleName1, sampleName2: sampleName2, selectedRight: selectedRight, selectedLeft: selectedLeft } });
+  router.push({ path: `/twoComComponent`, query: { flag: "true",sampleName1: sampleName1, sampleName2: sampleName2, selectedRight: selectedRight, selectedLeft: selectedLeft } });
 };
 
 const handleSizeChange = (newSize) => {

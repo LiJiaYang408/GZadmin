@@ -77,7 +77,7 @@ const handleUpload = async () => {
     return;
   }
 
-  const confirmResult = confirm('是否将该样本入库？');
+  const confirmResult = confirm('是否将该样本入库？(注意：未入库的临时数据，不可从历史记录查看详情！)');
   if (confirmResult) {
     flag.value = true;
   }

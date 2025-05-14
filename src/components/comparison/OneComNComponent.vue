@@ -26,7 +26,7 @@
               <el-radio label="whole">Excel</el-radio>
               <el-radio label="segment">Vcf</el-radio>
             </el-radio-group>
-            <el-button type="primary" @click="handleUpload">确认比对</el-button>
+            <el-button type="primary" @click="handleUpload" @keydown.enter.prevent>确认比对</el-button>
             <el-button @click="openDialog">设置比对容差阈值</el-button>
           </div>
         </el-card>
@@ -42,13 +42,13 @@
         </el-card>
       </div>
     </div>
-    <el-dialog v-model="dialogVisible" title="设置比对容差阈值" width="500"  center @close="handleDialogClose">
+    <el-dialog v-model="dialogVisible" title="设置比对容差阈值" width="500" center @close="handleDialogClose">
       <el-tag type="primary" style="margin-bottom: 10px">比对容差阈值（默认值：10）</el-tag>
       <br/>
       <el-input style="width: 60%" v-model="toleranceThreshold" placeholder="请输入比对容差阈值（默认值：10）"></el-input>
       <div style="float: right">
-        <el-button  type="primary" @click="handleConfirm">确认</el-button>
-        <el-button   @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="handleConfirm" @keydown.enter.prevent>确认</el-button>
+        <el-button @click="handleCancel" @keydown.enter.prevent>取消</el-button>
       </div>
 
     </el-dialog>
@@ -56,11 +56,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import RecordList from '../record/RecordList.vue'
 import { useStore } from 'vuex'
-import {ElCard, ElRadioGroup, ElRadio, ElButton, ElDialog, ElMessage} from 'element-plus';
+import { ElCard, ElRadioGroup, ElRadio, ElButton, ElDialog, ElMessage } from 'element-plus';
 
 const store = useStore()
 const selectedFile = ref(null);
@@ -107,7 +107,7 @@ const handleUpload = async () => {
   const formData = new FormData();
   formData.append('file', selectedFile.value);
   formData.append('uploadType', uploadType.value);
-  formData.append('num',toleranceThreshold.value)
+  formData.append('num', toleranceThreshold.value)
 
   try {
     const response = await axios.post('/records/upload', formData, {
@@ -149,12 +149,31 @@ const handleDialogClose = () => {
   isConfirm.value = false;
 };
 
-// 生命周期
+// 监听键盘事件
+const handleKeyDown = (e) => {
+  if (e.key === 'Enter') {
+    if (dialogVisible.value) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleConfirm();
+    } else {
+      e.preventDefault();
+      e.stopPropagation();
+      handleUpload();
+    }
+  }
+};
+
 onMounted(() => {
   if (store.state.details!= null) {
     details.value = store.state.details;
   }
-})
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 </script>
 
 <style scoped>

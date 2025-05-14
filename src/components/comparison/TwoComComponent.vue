@@ -53,7 +53,6 @@ const fetchData = async () => {
     tableData1.value = response1.data.data;
     const response2 = await axios.get('/comparison/getMitochondrialDetailDetails?name=' + route.query.sampleName2+'&&name2='+route.query.selectedRight);
     tableData2.value = response2.data.data;
-
     // 从后端获取对比结果
     const compareResponse = await axios.get(
         `/comparison/complexityCompare?flag=${route.query.flag}&sampleName1=${route.query.sampleName1}&name1=${route.query.selectedLeft}&sampleName2=${route.query.sampleName2}&name2=${route.query.selectedRight}`
