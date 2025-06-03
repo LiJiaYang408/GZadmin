@@ -89,7 +89,7 @@ const handleUpload = async () => {
     if (response.data && response.data.code === 200 && response.data.data && response.data.data.body && response.data.data.body.message) {
       ElMessage.success(`上传成功：${response.data.data.body.message}`);
     } else {
-      ElMessage.error('上传成功，但响应信息格式有误');
+      ElMessage.error(`上传失败，${response.data.message}`);
     }
   } catch (error) {
     if (error.response && error.response.data && error.response.data.code!== 200 && error.response.data.message) {

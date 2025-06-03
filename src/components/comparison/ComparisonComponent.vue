@@ -251,6 +251,7 @@ onBeforeUnmount(() => {
   padding: 20px;
   height: 70%;
   margin: 0 auto;
+  min-width: 900px;
 }
 
 h1 {
@@ -296,9 +297,13 @@ h4 {
 .left-List {
   width: 60%;
   margin-right: 30px;
+  min-width: 500px;
 }
 
 .right-Right {
   width: 40%;
+  min-width: 350px;
 }
+
+
 </style>

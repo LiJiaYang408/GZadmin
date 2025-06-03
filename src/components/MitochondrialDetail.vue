@@ -116,6 +116,7 @@ const paginatedDetails = computed(() => {
   margin: 0 auto;
   padding: 20px;
   width: 70%;
+  min-width: 1300px;
 }
 
 .left-panel {

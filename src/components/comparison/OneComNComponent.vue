@@ -34,7 +34,7 @@
 
       <!-- 右侧表格区域，使用 RecordList 组件 -->
       <div class="OneRight">
-        <el-card style="height: 100%">
+        <el-card style="height: 100%;min-width: 800px">
           <RecordList
               :details="details"
               :type="true"

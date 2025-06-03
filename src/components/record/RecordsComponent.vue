@@ -38,5 +38,6 @@ onMounted(() => {
 .card-h1{
   margin-top: 30px;
   padding-right: 40px;
+  min-width: 900px;
 }
 </style>
